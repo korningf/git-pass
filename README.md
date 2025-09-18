@@ -64,7 +64,9 @@ _TODO_
 The code is 99.999% verbatim from password-store by Jason Donenfeld.
 
 [Original README](README)
+
 [Original project](https://www.passwordstore.org/)
+
 [Original source](https://git.zx2c4.com/password-store/)
 
 
