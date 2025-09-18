@@ -138,8 +138,8 @@ Initialize the password-store.
 
 Sample Output:
 
-    Password store initialized for .password-store, FrancisKorning@welfare.ie
-    [master (root-commit) e6bcfa6] Set GPG id to .password-store, FrancisKorning@welfare.ie.
+    Password store initialized for .password-store, for identity: JohnDoe@Email.com.
+    [master (root-commit) e6bcfa6] Set GPG id to .password-store, JohnDoe@Email.com.
      1 file changed, 2 insertions(+)
      create mode 100644 .gpg-id
  
@@ -170,6 +170,13 @@ _TODO_
 
 
 
+_TODO_
+
+* Add SSH-Agent
+  
+* Add GPG-Agent
+
+
 # Tunneling
 
 
@@ -180,16 +187,17 @@ _TODO_
 ## AWS access
 
 
+# TODO
 
+_The next step is to figure out an organisational structure_
 
-_TODO_
+_set up agent-forwarding: pick either ssh-agent or gpg-agent_
 
-* Add SSH-Agent
+* evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
+
+* evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
   
-* Add GPG-Agent
 
-  
-  
 
 #  Attribution
 
