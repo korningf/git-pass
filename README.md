@@ -148,6 +148,15 @@ Sample Output:
 # Operation
 
 
+Store your Windows login
+
+    pass insert windows/ntlogin #ThisIsAsecure6WordPassphrase!
+
+    pass windows/ntlogin
+
+    #ThisIsAsecure6WordPassphrase!
+
+
 
 _TODO_
 
@@ -193,6 +202,11 @@ The code is 99.999% verbatim from password-store by Jason Donenfeld.
 [Original source](https://git.zx2c4.com/password-store/)
 
 
+In addition, the Tree command is from the Gnuwin32 project (and Gnuwin64).
 
+[Tree command](https://en.wikipedia.org/wiki/Tree_(command))
 
-[Original README] (README)
+[Gnuwin32 project](https://en.wikipedia.org/wiki/GnuWin32)
+
+[Gnuwin32 source] (https://sourceforge.net/projects/gnuwin32/)
+
