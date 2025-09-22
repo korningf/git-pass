@@ -132,7 +132,7 @@ Sample Output:
 
 The passphrase is needed to dearmor the vault the 1st time we unseal any secret.
 
-Pass will remember the passpharse within a session (Or if we run a GPG-Agent).
+Pass will remember the passphrase within a session (Or if we run a GPG-Agent).
 
 On Windows, this will use the Windows secure PIN entry dialog
 
@@ -208,9 +208,11 @@ We will add Keepass, Hashicorp vault, and brower plugins later (TODO).
 ### pass-file
 
 
-Pass-file allows us to store complete files as secrets (encoded as base64?),
+Pass-file allows us to store complete files as secrets (instead of 1-line).
 
-uses: SSH key, X.509 certs, Docker, Kubernetes, AWS-CLI, Azure-Cli Secrets.
+That is, we can use it for multi-line secrets and even for secret binary files:
+
+SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
 
     see [Pass-File](https://github.com/dvogt23/pass-file)
@@ -219,16 +221,17 @@ uses: SSH key, X.509 certs, Docker, Kubernetes, AWS-CLI, Azure-Cli Secrets.
     pass file help
 
 
-### Other Extensions
-
-_TODO_
-
-
 
 # Authentication
 
 
-## SSH Key Pair
+With Pass-File we can automate various authentication and authorizations.
+
+
+
+## SSH Keypair
+
+
 
 Generate your SSH keypair:
 
