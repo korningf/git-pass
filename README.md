@@ -360,13 +360,16 @@ Each secret is a '.gpg' encrypted with GnuPG.
 
     $ ls -AlF
     total 5
-    drwxr-xr-x 1 FrancisKorning 1049089  0 Sep 22 15:46 .git/
-    -rw-r--r-- 1 FrancisKorning 1049089 26 Sep 18 17:16 .gpg-id
-    drwxr-xr-x 1 FrancisKorning 1049089  0 Sep 22 15:46 ssh/
-    drwxr-xr-x 1 FrancisKorning 1049089  0 Sep 22 11:14 windows/
+    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 15:46 .git/
+    -rw-r--r-- 1  FrancisKorning  1049089   26  Sep 18 17:16 .gpg-id
+    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 19:30 ssh/
+    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 11:30   +-- id_rsa/
+    -rw-r--r-- 1  FrancisKorning  1049089 1050  Sep 22 19:30     +-- id_rsa.pub.gpg
+    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 19:30 windows/
+    -rw-r--r-- 1  FrancisKorning  1049089  464  Sep 22 19:30   +-- ntlogin.gpg
 
 
-Most of the intelligence is determining the user root,
+All the intelligence is determining the user id and root,
 
 and whether or not we have a custom user extension dir.
 
