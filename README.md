@@ -4,7 +4,7 @@
   *Minimal Windows POSIX pass command*
 
 
-![win-git-pass-minimal-iac-tools.md](win-git-pass-minimal-iac-tools.md "Windows Git-Pass Minimal IAC tools")
+![win-git-pass-minimal-iac-tools](win-git-pass-minimal-iac-tools.png "Windows Git-Pass Minimal IAC tools")
 
 
 Git-Pass is a port of the POSIX pass command (aka password-store) 
