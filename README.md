@@ -138,14 +138,23 @@ Initialize the password-store.
 
 Sample Output:
 
-    Password store initialized for .password-store, FrancisKorning@welfare.ie
-    [master (root-commit) e6bcfa6] Set GPG id to .password-store, FrancisKorning@welfare.ie.
+    Password store initialized for .password-store, for identity: JohnDoe@Email.com.
+    [master (root-commit) e6bcfa6] Set GPG id to .password-store, JohnDoe@Email.com.
      1 file changed, 2 insertions(+)
      create mode 100644 .gpg-id
  
 
 
 # Operation
+
+
+Store your Windows login
+
+    pass insert windows/ntlogin #ThisIsAsecure6WordPassphrase!
+
+    pass windows/ntlogin
+
+    #ThisIsAsecure6WordPassphrase!
 
 
 
@@ -161,6 +170,13 @@ _TODO_
 
 
 
+_TODO_
+
+* Add SSH-Agent
+  
+* Add GPG-Agent
+
+
 # Tunneling
 
 
@@ -171,16 +187,17 @@ _TODO_
 ## AWS access
 
 
+# TODO
 
+_The next step is to figure out an organisational structure_
 
-_TODO_
+_set up agent-forwarding: pick either ssh-agent or gpg-agent_
 
-* Add SSH-Agent
+* evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
+
+* evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
   
-* Add GPG-Agent
 
-  
-  
 
 #  Attribution
 
@@ -193,6 +210,11 @@ The code is 99.999% verbatim from password-store by Jason Donenfeld.
 [Original source](https://git.zx2c4.com/password-store/)
 
 
+In addition, the Tree command is from the Gnuwin32 project (and Gnuwin64).
 
+[Tree command](https://en.wikipedia.org/wiki/Tree_(command))
 
-[Original README] (README)
+[Gnuwin32 project](https://en.wikipedia.org/wiki/GnuWin32)
+
+[Gnuwin32 source] (https://sourceforge.net/projects/gnuwin32/)
+
