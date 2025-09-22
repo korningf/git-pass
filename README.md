@@ -4,12 +4,15 @@
   *Minimal Windows POSIX pass command*
 
 
-![win-git-pass-minimal-iac-tools](win-git-pass-minimal-iac-tools.png "Windows Git-Pass Minimal IAC tools")
-
-
 Git-Pass is a port of the POSIX pass command (aka password-store) 
 
 for a minimal Windows POSIX (GitBash, SysGit, MSys, MSys2, MinG64).
+
+
+
+![win-git-pass-file-ssh-pubkey](win-git-pass-file-ssh-pubkey.png "Windows Git-Pass ssh-pubkey")
+
+
 
 
 # Motivation
@@ -66,40 +69,16 @@ Example:
     ./install.sh
 
 
-# Extension
-
-
-## pass-file
-
-Pass-file allows us to upload files as secrets, useful for X.509 certs, SSH key pairs, etc.
-
-see [Pass-File](https://github.com/dvogt23/pass-file)
-
-
-pass-file is just a bash script so we can place it directly in the pass extensions directory.
-
-install via bash
-   
-```bash
-    mkdir -p /usr/lib/password-store/extensions
-    cd /usr/lib/password-store/extensions
-   
-    curl https://raw.githubusercontent.com/lukrop/pass-file/refs/heads/master/file.bash > file.bash
-    chmod a+x *.bash
-    cd
-```
-
-
 
 # Configuration
+
+
+### Memorable Passphrase
 
 Pick a (Memorable Passphrase)[https://strongphrase.net/]
 
 
-Generate your SSH keypair:
-
-    ssh-keygen -t rsa -b 4096 -C JohnDoe@email.com
-
+### GPG KeyRing
 
 Generate your GPG keyring:
 
@@ -121,6 +100,8 @@ Sample output:
       "John Doe <JohnDoe@email.com>"
 
 
+### Password-Store
+
 Create a .password-store git repo:
 
     cd ~
@@ -130,7 +111,6 @@ Create a .password-store git repo:
 Sample Output:
 
     Initialized empty Git repository in C:/Users/JohnDoe/.password-store/.git/
-
 
 
 Initialize the password-store.
@@ -147,6 +127,20 @@ Sample Output:
  
 
 
+
+### Unseal (De-Armor) a Secret
+
+The passphrase is needed to dearmor the vault the 1st time we unseal any secret.
+
+Pass will remember the passpharse within a session (Or if we run a GPG-Agent).
+
+On Windows, this will use the Windows secure PIN entry dialog
+
+
+![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+
+
+
 # Operation
 
 
@@ -157,6 +151,8 @@ As an example, we store our windows login in the path `windows/ntlogin`.
 Note GPG uses the public key to encrypt (and the private key to decrypt).
 
 This means we do not need to provide a passphrase to create a new secret.
+
+_where (***********) is a placeholder for your windows ntlogon password_.
 
 
     pass insert windows/ntlogin 
@@ -178,24 +174,100 @@ This means we do not need to provide a passphrase to create a new secret.
 
 ### Use a secret (windows login)
 
-Default usage mode is to print the secret on stdout (there are many other modes).
+The default usage mode is to print the secret on stdout.
+
+_where (***********) is your windows ntlogon password_.
 
     pass windows/ntlogin
 
-    #ThisIsAsecure6WordPassphrase!
+    ***********
 
 
-Unless we have previsouly configured a GPG-Agent (like SSH-Agent, but for GPG keyrings),
+### Limitations
 
-we must use the passphrase to dearmor (unseal) the password-store to read the secret.
+The principle behind pass is that it had to be a simple 100% bash command-line script.
 
-On Windows, this will use the Windows secure PIN entry dialog
+By design pass does one simple thing well: it stores a one-line secret in a text file.
+
+The text file can append name=value parameter pairs, but the first line is the secret.
 
 
-![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
 
+
+
+# Extensions
+
+Now the simple design allows for additional bash extension scripts.
+
+For now, the only extension we require is pass-file (file secrets).
+
+We will add Keepass, Hashicorp vault, and brower plugins later (TODO).
+
+
+
+### pass-file
+
+
+Pass-file allows us to store complete files as secrets (encoded as base64?),
+
+uses: SSH key, X.509 certs, Docker, Kubernetes, AWS-CLI, Azure-Cli Secrets.
+
+
+    see [Pass-File](https://github.com/dvogt23/pass-file)
+
+
+    pass file help
+
+
+### Other Extensions
 
 _TODO_
+
+
+
+# Authentication
+
+
+## SSH Key Pair
+
+Generate your SSH keypair:
+
+    ssh-keygen -t rsa -b 4096 -C JohnDoe@email.com
+
+
+Insert the keypair in your vault
+
+    pass file  add ~/.ssh/id_rsa.pub   ssh/id_rsa/ids_rsa.pub
+    pass file  add ~/.ssh/id_rsa       ssh/id_rsa/ids_rsa
+
+
+Delete the SSH private key (optional)
+
+
+
+## Agent Forwarding
+
+_TODO_
+
+* Add SSH-Agent
+  
+* Add GPG-Agent
+
+
+
+## Agent Tunneling
+
+
+### DMZ Bastion
+
+### Azure access
+
+### AWS access
+
+### Docker secrets
+
+### Kubernetes secrets
+
 
 
 # Automation
@@ -205,23 +277,9 @@ _TODO_
     gpg_id=`gpg --list-secret-keys | head -5 | grep uid | xargs | cut -d ' ' -f 5 | tr '<>' '  ' | tee` 2>/dev/null
     gpg_hash=`gpg --list-secret-keys | head -5 | grep 'sec ' | xargs | cut -d ' ' -f 2`
 
-
-
 _TODO_
 
-* Add SSH-Agent
-  
-* Add GPG-Agent
 
-
-# Tunneling
-
-
-## DMZ Bastion
-
-## Azure access
-
-## AWS access
 
 
 # TODO
