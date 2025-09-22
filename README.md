@@ -299,7 +299,18 @@ _set up agent-forwarding: pick either ssh-agent or gpg-agent_
 
 #  Attribution
 
-The code is 99.999% verbatim from password-store by Jason Donenfeld.
+
+### Pass on Git
+
+Stephane Korning (stefuss@yahoo.com) for the idea to port POSIX pass to Gitbash.
+
+
+
+### Pass
+
+The Pass code is 99.999% verbatim from password-store by Jason Donenfeld.
+
+The patch is basically just packaging of install.sh, and Tree and pass-file.
 
 [Original README](README)
 
@@ -308,7 +319,9 @@ The code is 99.999% verbatim from password-store by Jason Donenfeld.
 [Original source](https://git.zx2c4.com/password-store/)
 
 
-In addition, the Tree command is from the Gnuwin32 project (and Gnuwin64).
+### Tree
+
+In addition, the Tree command is from the Gnuwin32 project (GNU devs).
 
 [Tree command](https://en.wikipedia.org/wiki/Tree_(command))
 
@@ -316,3 +329,21 @@ In addition, the Tree command is from the Gnuwin32 project (and Gnuwin64).
 
 [Gnuwin32 source] (https://sourceforge.net/projects/gnuwin32/)
 
+
+
+## Pass-File
+
+The Pass-File extension is 100% bash from (Dima) Dimitrij Vogt (GNU License).
+
+[Pass-File](https://github.com/dvogt23/pass-file)
+
+There is another Pass-File bash extension from Lukas Kropatschk (MIT license).
+
+[Pass-File](https://github.com/lukrop/pass-file/) 
+
+_TODO evaluate which is better ? - sticking to the GNU license one for now !_
+
+
+# LICENSE
+
+GNU GPL, as per [LICENSE](LICENSE)
