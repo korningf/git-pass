@@ -261,18 +261,36 @@ With Pass-File we can automate various authentication and authorizations.
 
 
 
-Generate your SSH keypair:
+If necessary, generate an SSH keypair :
 
     ssh-keygen -t rsa -b 4096 -C JohnDoe@email.com
 
 
-Insert the keypair in your vault
+Insert the keys
 
-    pass file  add ~/.ssh/id_rsa.pub   ssh/id_rsa/ids_rsa.pub
-    pass file  add ~/.ssh/id_rsa       ssh/id_rsa/ids_rsa
+    pass file  add ~/.ssh/id_rsa.pub   ssh/id_rsa/
+    pass file  add ~/.ssh/id_rsa       ssh/id_rsa/
 
 
-Delete the SSH private key (optional)
+List the keys
+    pass ssh/id_rsa
+
+    ssh/id_rsa
+    |-- id_rsa
+    `-- id_rsa.pub
+
+
+Show the public key
+
+    pass ssh/id_rsa/id_rsa.pub
+
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBbj1ocUswXZLp2G6ys2KaP1Y6DINYyvYAvQ766GrtF1UvPfowv7hnQg57gtpxx4PhEJdCaFaEnI3TGlR4ZIEJFswkz5Xavq5ycKM/SCB6vkS5nvl2rHT3kxqePSJpj+xznkYPJbtJH/aA/Ox78p4vN1Sh3YSGy76yLlX5gmbBc7o68r/H2N1xAMqa/yJkKY6AZdriGL3upZb4wHGRiQJLWl9g0xc/NrES+SYQlt9cFOHcXVgG6ZIG/5WcqsOyUy0yeF/powG4r4xAAPmYvCdruPHuiImY6rwA2Xq71G2EImh6roE3yTOQdIn94Mk7gSo++4GaVk2PGsgpeKNWHKcpGfgWkMdpdvpBERvwKbYgJFfZV2h2OR5ZRGIRWOMUd8zigRBFRwAguhw1FID40j04q4iBZ5qMINPOLdomlKtOJeWFG/Pj0btBnXuVIp2+83nIbg4hHOyawjI7owaoPqjyQQkqFyH16xYWeoJpZwmLmqgjIqpUF8qo1WWhkXZ5oLU= welfare\franciskorning@PCVDIP0085
+
+
+If you have a GPG Agent, you could delete the private key from ~/.ssh (_Optional_).
+
+This would be maximum security, as there would be no secrets persisted in the clear.
+
 
 
 
