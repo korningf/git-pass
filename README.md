@@ -282,6 +282,38 @@ _TODO_
 
 
 
+# TODO
+
+_The next step is to figure out an organisational structure_
+
+_set up agent-forwarding: pick either ssh-agent or gpg-agent_
+
+* evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
+
+* evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
+  
+
+
+# Integration
+
+_TODO_
+
+
+_Finally we should develop integration plugins_
+
+
+* integrate with HashiCorp Vault, Consul, etc ?
+
+* integrate with PowerShell Secrets Management ?
+
+* integrate with Just-in-Time PIM Privilege Elevation ?
+
+
+
+
+
+
+
 # Automation
 
 _TODO_
@@ -294,16 +326,7 @@ _TODO_
 
 
 
-# TODO
 
-_The next step is to figure out an organisational structure_
-
-_set up agent-forwarding: pick either ssh-agent or gpg-agent_
-
-* evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
-
-* evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
-  
 
 
 #  Attribution
@@ -346,7 +369,7 @@ The Pass-File extension is 100% bash from (Dima) Dimitrij Vogt (GNU License).
 
 [Pass-File](https://github.com/dvogt23/pass-file)
 
-There is another Pass-File bash extension from Lukas Kropatschk (MIT license).
+There is another Pass-File bash extension from Lukas Kropatschek (MIT license).
 
 [Pass-File](https://github.com/lukrop/pass-file/) 
 
