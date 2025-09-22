@@ -48,6 +48,15 @@ There are a plethora of extension plugins that integrate password-store.
 
 
 
+#  Documentation
+
+For the TLDR keep on reading this doc and following instructions.
+
+Browse the official password-store docs For further documentation.
+
+    https://www.passwordstore.org/
+
+
 
 #  Preparation
 
