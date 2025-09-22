@@ -3,7 +3,9 @@
 
   *Minimal Windows POSIX pass command*
 
-  
+
+![Win-GPG-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+
 
 Git-Pass is a port of the POSIX pass command (aka password-store) 
 
@@ -148,14 +150,49 @@ Sample Output:
 # Operation
 
 
-Store your Windows login
+### Store a secret (Windows login)
 
-    pass insert windows/ntlogin #ThisIsAsecure6WordPassphrase!
+As an example, we store our windows login in the path `windows/ntlogin`.
+
+Note GPG uses the public key to encrypt (and the private key to decrypt).
+
+This means we do not need to provide a passphrase to create a new secret.
+
+
+    pass insert windows/ntlogin 
+
+     Enter password for windows/ntlogin:  ***********
+     Retype password for windows/ntlogin: ***********
+     [master 6ebe58e] Added given password for windows/ntlogin to store.
+      1 file changed, 0 insertions(+), 0 deletions(-)
+      create mode 100644 windows/ntlogin.gpg
+
+
+### List secrets
+
+    pass
+     Password Store
+     `-- windows
+         `-- ntlogin
+
+
+### Use a secret (windows login)
+
+Default usage mode is to print the secret on stdout (there are many other modes).
 
     pass windows/ntlogin
 
     #ThisIsAsecure6WordPassphrase!
 
+
+Unless we have previsouly configured a GPG-Agent (like SSH-Agent, but for GPG keyrings),
+
+we must use the passphrase to dearmor (unseal) the password-store to read the secret.
+
+On Windows, this will use the Windows secure PIN entry dialog
+
+
+![Win-GPG-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
 
 
 _TODO_
