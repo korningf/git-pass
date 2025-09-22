@@ -4,7 +4,7 @@
   *Minimal Windows POSIX pass command*
 
 
-![Win-GPG-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+![win-git-pass-minimal-iac-tools.md](win-git-pass-minimal-iac-tools.md "Windows Git-Pass Minimal IAC tools")
 
 
 Git-Pass is a port of the POSIX pass command (aka password-store) 
@@ -192,7 +192,7 @@ we must use the passphrase to dearmor (unseal) the password-store to read the se
 On Windows, this will use the Windows secure PIN entry dialog
 
 
-![Win-GPG-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
 
 
 _TODO_
