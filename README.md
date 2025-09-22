@@ -9,7 +9,6 @@ Git-Pass is a port of the POSIX pass command (aka password-store)
 for a minimal Windows POSIX (GitBash, SysGit, MSys, MSys2, MinG64).
 
 
-
 ![win-git-pass-file-ssh-pubkey](win-git-pass-file-ssh-pubkey.png "Windows Git-Pass ssh-pubkey")
 
 
@@ -17,11 +16,19 @@ for a minimal Windows POSIX (GitBash, SysGit, MSys, MSys2, MinG64).
 
 # Motivation
 
+Pass is designed for portability and simplicity, it is almost 100% bash;
+
+All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
+
+.
+
 Though password-store is a bash .sh script, it installs via a Makefile.
 
-Make may not be present on every system, and the .sh script is broken.
+Now Make is not always present, and the .sh script is broken for gitbash.
 
-I've patched it to work on gitbash (will probably work on the others).
+I've patched it to work on gitbash (it will probably work on the others).
+
+.
 
 
 #  Abstract
@@ -30,17 +37,25 @@ This workflow is entirely based on portable, simple POSIX command-line.
 
 Password-Store is a secure Secrets-Vault aka a Secure Password-Manager.
 
+.
+
 It is basically a POSIX directory structure, encrypted via a passphrase.
 
 The encryption uses state of the art RSA 4096 keys and a GnuPG keyring.
+
+.
 
 The directory structure is a Git repo, so it can be shared on machines.
 
 Each file in a .password-store directory holds a secret and parameters.
 
+.
+
 The organisation therein is up to you (up to organisation's standards).
 
 Typically, you put your SSH PEM keys, passwords, secrets, credentials.
+
+.
 
 You use them from the command-line by unsealing them with the passphrase.
 
@@ -143,7 +158,11 @@ The passphrase is needed to dearmor the vault the 1st time we unseal any secret.
 
 Pass will remember the passphrase within a session (Or if we run a GPG-Agent).
 
-On Windows, this will use the Windows secure PIN entry dialog
+.
+
+When using GPG for Windows, this will use the Windows secure PIN entry dialog.
+
+Bear in mind the workflow may vary depending on which version of GPG is installed.
 
 
 ![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
@@ -307,6 +326,77 @@ _Finally we should develop integration plugins_
 * integrate with PowerShell Secrets Management ?
 
 * integrate with Just-in-Time PIM Privilege Elevation ?
+
+
+
+# Exploration
+
+Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
+
+Hashicorp Vault is just overkill for a lot of situations - ie if we we just want a Dev Box.
+
+The beauty of pass is we can run it anywhere: on windows, on linux, on serverless containers.
+
+.
+
+
+OK so internally, the simplicity of the .password-store design and structure rocks.
+
+The .password-store dir is just a plain control directory, accessed via conventions.
+
+
+    $ tree ~/.password-store
+    .
+    |-- ssh
+    |   `-- id_rsa
+    |       `-- id_rsa.pub.gpg
+    `-- windows
+        `-- ntlogin.gpg
+
+    3 directories, 2 files
+
+
+Each secret is a '.gpg' encrypted with GnuPG.
+
+    $ ls -AlF
+    total 5
+    drwxr-xr-x 1 FrancisKorning 1049089  0 Sep 22 15:46 .git/
+    -rw-r--r-- 1 FrancisKorning 1049089 26 Sep 18 17:16 .gpg-id
+    drwxr-xr-x 1 FrancisKorning 1049089  0 Sep 22 15:46 ssh/
+    drwxr-xr-x 1 FrancisKorning 1049089  0 Sep 22 11:14 windows/
+
+
+Most of the intelligence is determining the user root,
+
+and whether or not we have a custom user extension dir.
+
+So an equivalent powershell script could replicate pass.
+
+Something like:
+
+    GITBASH='C:\ProgramFiles\GitBash\' 
+    
+    gpg --decrypt %GITBASH%\.password-store\windows\ntlogin.gpg
+
+    ***********
+
+
+If we map the Gitbash POSIX user home to the Windows user home,
+
+Then we can have everything work together in perfect harmony.
+
+.
+
+For extra marks, we add a plugin to sync it to Hashicorp Vault.
+
+We can even add a plugin to sync Powershell Secret Management.
+
+We would then have a consistent secure workflow across the board.
+
+Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
+
+
+_TODO_
 
 
 
