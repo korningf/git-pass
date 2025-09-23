@@ -483,7 +483,7 @@ That's where git-pass comes in.
 
 We could try to add extension plugins and make it talk to everything.
 
-We shall try not to reinvent the wheel and use idustry-standard tools.
+We shall try not to reinvent the wheel and use industry-standard tools.
 
 .
 
