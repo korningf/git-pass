@@ -575,4 +575,4 @@ _TODO evaluate which is better ? - sticking to the GNU license one for now !_
 
 # LICENSE
 
-GNU GPL, as per [LICENSE](LICENSE)
+GNU GPL, as per [LICENSE](COPYING)
