@@ -189,7 +189,7 @@ Pick a (Memorable Passphrase)[https://strongphrase.net/]
 
 ### SSH Keypair
 
-![win-git-init-gen-ssh-keys.png](win-git-init-gen-ssh-keys.png "Generate SSH keys")
+![win-git-pass-init-gen-ssh-keys.png](win-git-pass-init-gen-ssh-keys.png "Generate SSH keys")
 
 
 If necessary, generate an SSH keypair:
@@ -201,7 +201,7 @@ If necessary, generate an SSH keypair:
 
 ### GPG KeyRing
 
-![win-git-init-pgp-keyring.png](win-git-init-pgp-keyring.png "Generate PGP keyring")
+![win-git-pass-init-gen-gpg-keyring.png](win-git-pass-init-gen-gpg-keyring.png "Generate PGP keyring")
 
 
 If necessary, Generate your GPG keyring:
@@ -229,7 +229,7 @@ Sample output:
 ### Password-Store git repo
 
 
-![win-git-init-pass-store.png](win-git-init-pass-store.png "Generate PGP keyring")
+![win-git-pass-init-pass-store.png](win-git-pass-init-pass-store.png "Generate PGP keyring")
 
 
 Configure your Git user
@@ -269,7 +269,7 @@ Sample Output:
 
 ### GPG Passphrase Entry Dialog
 
-![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+![win-gpg-pin-passphrase-dialog.png](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
 
 
 The GPG passphrase is needed to armor (seal) or dearmor (unseal) any secret.
@@ -294,7 +294,7 @@ When using GPG for Windows, this will use the Windows secure PIN entry dialog.
 
 ## Simple Secret 
 
-![win-git-pass-insert-plain-secret.png](win-git-pass-insert-plain-secret-png "Insert a plain secret (windows ntlogin)")
+![win-git-pass-insert-plain-secret.png](win-git-pass-insert-plain-secret.png "Insert a plain secret (windows ntlogin)")
 
 ### Store a secret (windows ntlogin)
 
@@ -352,7 +352,7 @@ The text file can append name=value parameter pairs, but the first line is the s
 With Pass-File (see below) we can automate various authentication and authorizations.
 
 
-![win-git-pass-insert-ssh-keys.png](win-git-pass-insert-ssh-keys-png "Insert file secrets (SSH keys)")
+![win-git-pass-insert-ssh-keys.png](win-git-pass-insert-ssh-keys.png "Insert file secrets (SSH keys)")
 
 
 ### Insert file secrets (SSH keys)
