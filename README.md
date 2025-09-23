@@ -14,7 +14,7 @@ minimal Windows POSIX shell on GitBash (or SysGit, MSys, MSys2, MinGW...).
 
 
 
-![win-git-pass-file-ssh-pubkey](win-git-pass-file-ssh-pubkey.png "Windows Git-Pass ssh-pubkey")
+![win-git-pass-show-ssh-pubkey.png](win-git-pass-show-ssh-pubkey.png "Extract SSH pubkey")
 
 
 
@@ -96,374 +96,6 @@ There are a plethora of extension plugins that integrate password-store.
 
 
 
-
-
-
-
-#  Documentation
-
-For the TLDR keep on reading this doc and following instructions.
-
-Browse the official password-store docs For further documentation.
-
-    https://www.passwordstore.org/
-
-
-
-#  Preparation
-
-Have an email identity to be used with the following:
-
-    - SSH keypair
-    - GPG keyring
-    - Git account
-
-Example:
-
-    name:  John Doe
-    email: JohnDoe@email.com
-   
-
-#  Installation
-
-
-Clone this git repo and run the install script.
-
-    
-    ./install.sh
-
-
-
-# Configuration
-
-
-### Memorable Passphrase
-
-Pick a (Memorable Passphrase)[https://strongphrase.net/]
-
-
-### GPG KeyRing
-
-Generate your GPG keyring:
-
-    gpg --gen-key
-
-
-Use following parameters:
-
-    key kind:      1 (RSA)
-    key size:      4096
-    validity:      0 (never expires)
-
-
-Sample output:
-
-    Real name: John Doe
-    Email address: JohnDoe@email.com
-    You selected this USER-ID:
-      "John Doe <JohnDoe@email.com>"
-
-
-### Password-Store
-
-Create a .password-store git repo:
-
-    cd ~
-    mkdir -p .password-store
-    git init .password-store
-
-Sample Output:
-
-    Initialized empty Git repository in C:/Users/JohnDoe/.password-store/.git/
-
-
-Initialize the password-store.
-
-    pass init .password-store ${gpg_id}
-
-
-Sample Output:
-
-    Password store initialized for .password-store, for identity: JohnDoe@Email.com.
-    [master (root-commit) e6bcfa6] Set GPG id to .password-store, JohnDoe@Email.com.
-     1 file changed, 2 insertions(+)
-     create mode 100644 .gpg-id
- 
-
-
-
-### Unseal (De-Armor) a Secret
-
-The passphrase is needed to dearmor the vault the 1st time we unseal any secret.
-
-Pass will remember the passphrase within a session (Or if we run a GPG-Agent).
-
-.
-
-When using GPG for Windows, this will use the Windows secure PIN entry dialog.
-
-Bear in mind the workflow may vary depending on which version of GPG is installed.
-
-
-![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
-
-
-
-# Operation
-
-
-### Store a secret (Windows login)
-
-As an example, we store our windows login in the path `windows/ntlogin`.
-
-Note GPG uses the public key to encrypt (and the private key to decrypt).
-
-This means we do not need to provide a passphrase to create a new secret.
-
-_where (***********) is a placeholder for your windows ntlogon password_.
-
-
-    pass insert windows/ntlogin 
-
-     Enter password for windows/ntlogin:  ***********
-     Retype password for windows/ntlogin: ***********
-     [master 6ebe58e] Added given password for windows/ntlogin to store.
-      1 file changed, 0 insertions(+), 0 deletions(-)
-      create mode 100644 windows/ntlogin.gpg
-
-
-### List secrets
-
-    pass
-     Password Store
-     `-- windows
-         `-- ntlogin
-
-
-### Use a secret (windows login)
-
-The default usage mode is to print the secret on stdout.
-
-_where (***********) is your windows ntlogon password_.
-
-    pass windows/ntlogin
-
-    ***********
-
-
-### Limitations
-
-The principle behind pass is that it had to be a simple 100% bash command-line script.
-
-By design pass does one simple thing well: it stores a one-line secret in a text file.
-
-The text file can append name=value parameter pairs, but the first line is the secret.
-
-
-
-
-
-# Extensions
-
-Now the simple design allows for additional bash extension scripts.
-
-For now, the only extension we require is pass-file (file secrets).
-
-We will add Keepass, Hashicorp vault, and brower plugins later (TODO).
-
-
-
-### pass-file
-
-
-Pass-file allows us to store complete files as secrets (instead of 1-line).
-
-That is, we can use it for multi-line secrets and even for secret binary files:
-
-SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
-
-
-    see [Pass-File](https://github.com/dvogt23/pass-file)
-
-
-    pass file help
-
-
-
-# Authentication
-
-
-With Pass-File we can automate various authentication and authorizations.
-
-
-
-## SSH Keypair
-
-
-
-If necessary, generate an SSH keypair :
-
-    ssh-keygen -t rsa -b 4096 -C JohnDoe@email.com
-
-
-Insert the keys
-
-    pass file  add ~/.ssh/id_rsa.pub   ssh/id_rsa/
-    pass file  add ~/.ssh/id_rsa       ssh/id_rsa/
-
-
-List the keys
-    pass ssh/id_rsa
-
-    ssh/id_rsa
-    |-- id_rsa
-    `-- id_rsa.pub
-
-
-Show the public key
-
-    pass ssh/id_rsa/id_rsa.pub
-
-    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBbj1ocUswXZLp2G6ys2KaP1Y6DINYyvYAvQ766GrtF1UvPfowv7hnQg57gtpxx4PhEJdCaFaEnI3TGlR4ZIEJFswkz5Xavq5ycKM/SCB6vkS5nvl2rHT3kxqePSJpj+xznkYPJbtJH/aA/Ox78p4vN1Sh3YSGy76yLlX5gmbBc7o68r/H2N1xAMqa/yJkKY6AZdriGL3upZb4wHGRiQJLWl9g0xc/NrES+SYQlt9cFOHcXVgG6ZIG/5WcqsOyUy0yeF/powG4r4xAAPmYvCdruPHuiImY6rwA2Xq71G2EImh6roE3yTOQdIn94Mk7gSo++4GaVk2PGsgpeKNWHKcpGfgWkMdpdvpBERvwKbYgJFfZV2h2OR5ZRGIRWOMUd8zigRBFRwAguhw1FID40j04q4iBZ5qMINPOLdomlKtOJeWFG/Pj0btBnXuVIp2+83nIbg4hHOyawjI7owaoPqjyQQkqFyH16xYWeoJpZwmLmqgjIqpUF8qo1WWhkXZ5oLU= welfare\franciskorning@PCVDIP0085
-
-
-If you have a GPG Agent, you could delete the private key from ~/.ssh (_Optional_).
-
-This would be maximum security, as there would be no secrets persisted in the clear.
-
-
-
-
-## Agent Forwarding
-
-_TODO_
-
-* Add SSH-Agent
-  
-* Add GPG-Agent
-
-
-
-## Agent Tunneling
-
-
-### DMZ Bastion
-
-### Azure access
-
-### AWS access
-
-### Docker secrets
-
-### Kubernetes secrets
-
-
-
-# TODO
-
-_The next step is to figure out an organisational structure_
-
-_set up agent-forwarding: pick either ssh-agent or gpg-agent_
-
-* evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
-
-* evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
-  
-
-
-# Integration
-
-_TODO_
-
-
-_Finally we should develop integration plugins_
-
-
-* integrate with SOPS Secrets-Operations
-
-* integrate with cloud clients AWS-KMS, Azure AKV, GCP KMS ?
-
-* integrate with HashiCorp Vault, Consul, Nomad, Terraform ?
-
-* integrate with Just-in-Time PIM Privilege Elevation ?
-
-* integrate with PowerShell Secrets Management ?
-
-
-
-# Exploration
-
-Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
-
-Hashicorp Vault is just overkill for a lot of situations - ie if we we just want a Dev Box.
-
-The beauty of pass is we can run it anywhere: on windows, on linux, on serverless containers.
-
-.
-
-
-OK so internally, the simplicity of the .password-store design and structure rocks.
-
-The .password-store dir is just a plain control directory, accessed via conventions.
-
-
-    $ tree ~/.password-store
-    .
-    |-- ssh
-    |   `-- id_rsa
-    |       `-- id_rsa.pub.gpg
-    `-- windows
-        `-- ntlogin.gpg
-
-    3 directories, 2 files
-
-
-Each secret is a '.gpg' encrypted with GnuPG.
-
-    $ ls -AlF
-    total 5
-    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 15:46 .git/
-    -rw-r--r-- 1  FrancisKorning  1049089   26  Sep 18 17:16 .gpg-id
-    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 19:30 ssh/
-    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 11:30   +-- id_rsa/
-    -rw-r--r-- 1  FrancisKorning  1049089 1050  Sep 22 19:30     +-- id_rsa.pub.gpg
-    drwxr-xr-x 1  FrancisKorning  1049089    0  Sep 22 19:30 windows/
-    -rw-r--r-- 1  FrancisKorning  1049089  464  Sep 22 19:30   +-- ntlogin.gpg
-
-
-All the intelligence is determining the user id and root,
-
-and whether or not we have a custom user extension dir.
-
-So an equivalent powershell script could replicate pass.
-
-Something like:
-
-    GITBASH='C:\ProgramFiles\GitBash\' 
-    
-    gpg --decrypt %GITBASH%\.password-store\windows\ntlogin.gpg
-
-    ***********
-
-
-If we map the Gitbash POSIX user home to the Windows user home,
-
-Then we can have everything work together in perfect harmony.
-
-.
-
-For extra marks, we add a plugin to sync it to Hashicorp Vault.
-
-We can even add a plugin to sync Powershell Secret Management.
-
-We would then have a consistent secure workflow across the board.
-
-Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
-
-
-_TODO_
-
-
 # Workflow
 
 
@@ -506,6 +138,435 @@ But that's on the CI/CD/CT factory and the server, and for Data Secrets.
 .
 
 We will address SOPS and cloud context scopes in a later project.
+
+
+
+
+#  Documentation
+
+For the TLDR keep on reading this doc and following instructions.
+
+Browse the official password-store docs For further documentation.
+
+    [UNIX Password-Store](https://www.passwordstore.org/)
+
+
+
+
+#  Preparation
+
+Have an email identity to be used with the following:
+
+    - SSH keypair
+    - GPG keyring
+    - Git account
+
+Example:
+
+    name:  John Doe
+    email: JohnDoe@email.com
+   
+
+#  Installation
+
+
+In an admin gitbash shell, clone this repo and run the install script.
+
+    
+    ./install.sh
+
+
+
+# Configuration
+
+
+
+### Memorable Passphrase
+
+Pick a (Memorable Passphrase)[https://strongphrase.net/]
+
+
+
+### SSH Keypair
+
+![win-git-init-gen-ssh-keys.png](win-git-init-gen-ssh-keys.png "Generate SSH keys")
+
+
+If necessary, generate an SSH keypair:
+
+    ssh-keygen -t rsa -b 4096 -C JohnDoe@email.com
+
+
+
+
+### GPG KeyRing
+
+![win-git-init-pgp-keyring.png](win-git-init-pgp-keyring.png "Generate PGP keyring")
+
+
+If necessary, Generate your GPG keyring:
+
+    gpg --gen-key
+
+
+Use following parameters:
+
+    key kind:      1 (RSA)
+    key size:      4096
+    validity:      0 (never expires)
+
+
+Sample output:
+
+    Real name: John Doe
+    Email address: JohnDoe@email.com
+    You selected this USER-ID:
+      "John Doe <JohnDoe@email.com>"
+
+
+
+
+### Password-Store git repo
+
+
+![win-git-init-pass-store.png](win-git-init-pass-store.png "Generate PGP keyring")
+
+
+Configure your Git user
+
+    git config --global user.name "John Doe"
+    git config --global user.name "JohnDoe@email.com"    
+
+
+Create the `.password-store dir` as a Git repo:
+
+    cd ~
+    mkdir -p .password-store
+    git init .password-store
+
+
+Sample Output:
+
+    Initialized empty Git repository in C:/Users/JohnDoe/.password-store/.git/
+
+
+### Password-Store pass database
+
+
+Initialize the  `.password-store` Pass database.
+
+    pass init .password-store JohnDoe@email.com
+
+
+Sample Output:
+
+    Password store initialized for .password-store, for identity: JohnDoe@Email.com.
+    [master (root-commit) e6bcfa6] Set GPG id to .password-store, JohnDoe@Email.com.
+     1 file changed, 2 insertions(+)
+     create mode 100644 .gpg-id
+ 
+
+
+### GPG Passphrase Entry Dialog
+
+![win-gpg-pin-passphrase-dialog](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+
+
+The GPG passphrase is needed to armor (seal) or dearmor (unseal) any secret.
+
+GPG will prompt for a passphrase on first use and and will try to remember it.
+
+.
+
+The mechanism may be 100% command-line, or it may involve a Windows PIN dialog.
+
+The workflow varies: when using an MSys or MinGW GPG this may be command-lne.
+
+When using GPG for Windows, this will use the Windows secure PIN entry dialog.
+
+
+
+
+
+
+# Operation
+
+
+## Simple Secret 
+
+![win-git-pass-insert-plain-secret.png](win-git-pass-insert-plain-secret-png "Insert a plain secret (windows ntlogin)")
+
+### Store a secret (windows ntlogin)
+
+As an example, we store our windows login in the path `windows/ntlogin`.
+
+Note GPG uses the public key to encrypt (and the private key to decrypt).
+
+This means we do not need to provide a passphrase to create a new secret.
+
+_where (***********) is a placeholder for your windows ntlogon password_.
+
+
+    pass insert windows/ntlogin 
+
+     Enter password for windows/ntlogin:  ***********
+     Retype password for windows/ntlogin: ***********
+     [master 6ebe58e] Added given password for windows/ntlogin to store.
+      1 file changed, 0 insertions(+), 0 deletions(-)
+      create mode 100644 windows/ntlogin.gpg
+
+
+### List secrets
+
+    pass
+     Password Store
+     `-- windows
+         `-- ntlogin
+
+
+### Use a secret (windows ntlogin)
+
+The default usage mode is to print the secret on stdout.
+
+_where (***********) is your windows ntlogon password_.
+
+    pass windows/ntlogin
+
+    ***********
+
+
+### Limitations
+
+The principle behind pass is that it had to be a simple 100% bash command-line script.
+
+By design pass does one simple thing well: it stores a one-line secret in a text file.
+
+The text file can append name=value parameter pairs, but the first line is the secret.
+
+
+
+
+## File Secrets (SSH keypair)
+
+
+With Pass-File (see below) we can automate various authentication and authorizations.
+
+
+![win-git-pass-insert-ssh-keys.png](win-git-pass-insert-ssh-keys-png "Insert file secrets (SSH keys)")
+
+
+### Insert file secrets (SSH keys)
+
+    pass file  add ~/.ssh/id_rsa.pub   ssh/id_rsa/
+    pass file  add ~/.ssh/id_rsa       ssh/id_rsa/
+
+
+### List file secrets
+
+
+    pass list ssh/id_rsa
+
+    ssh/id_rsa
+    |-- id_rsa
+    `-- id_rsa.pub
+
+
+### Use file secret (SSH pub key)
+
+    pass show ssh/id_rsa/id_rsa.pub
+
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCez6BEIjpCTXM2O4Gnl5+3le+l9F6jDod9CzG4RjApASAs+BGiVMnUfOlaW3uA/9equaCCOWBWZ9JRZzUQq5KVO0ayrbIkfp6oemsCTxEhsmdGWX5OzMVLzhoxvbS+RVds1eRybLPNENeJ8k3eCPP73mFnKRJixE4/EgUxPMQhZbC4bRxvivmDPH5kHu0EpFZ6DwG9L9lw3YBTMKqxKK78X/qe8BJFMkAOQJ2XndN0AOfl01egmX7BEPcBPjfeVuiv3evs9PT8a6t0MQCeja4RcL1sHhf4crn5Gp0PKJjeXsqAsaV32IXE4xMLBf8mHOLoM9a00kBfXDhl1q+JhQVbA9Iy7meSfJAhl6gbgaxupywrEDdrKQae/vZhCHr6CiNHCRwAAwghNPG8hb6RdrVG52l8MIbN9FRKn/QpIJ3EehPPaqIdWqrNh/WdvmksxYaNF2Cwhtvp/qy8VNV/O0spDYe395rVQEmMvLZwNzExtsPTDFcR0Zr7xjkam23rZHeDf9Rr1YEMDeBv94txpy91ZUxHghYVaDO6un939fOvpsrByvMXkRJSHI3nhj1Dz2kzxYwkuXBJhdULUtTnJHR3gaoAN6sq+BAhpDkUjetD8yDe3kMqb2X4vETeMqsrPpn9vXWBIBDWNbpCDtKe8F4+fBuuaWT2CCxiANDo5vZLSw== JohnDoe@email.com
+    
+
+
+If you have a GPG Agent, you could delete the private key from ~/.ssh (_Optional_).
+
+This would be maximum security, as there would be no secrets persisted in the clear.
+
+
+
+
+
+# Exploration
+
+
+OK so internally, the simplicity of the .password-store design and structure rocks.
+
+The .password-store dir is just a plain control directory, accessed via conventions.
+
+
+    $ tree ~/.password-store
+    .
+    |-- ssh
+    |   `-- id_rsa
+    |       `-- id_rsa.pub    
+    |       `-- id_rsa.pub.gpg
+    `-- windows
+        `-- ntlogin.gpg
+
+    3 directories, 2 files
+
+
+Each secret is a '.gpg' encrypted with GnuPG.
+
+    $ ls -AlF
+    total 5
+    drwxr-xr-x 1  Admin  1049089    0  Sep 22 15:46 .git/
+    -rw-r--r-- 1  Admin  1049089   26  Sep 18 17:16 .gpg-id
+    drwxr-xr-x 1  Admin  1049089    0  Sep 22 19:30 ssh/
+    drwxr-xr-x 1  Admin  1049089    0  Sep 22 11:30   +-- id_rsa/
+    -rw-r--r-- 1  Admin  1049089 1050  Sep 22 19:30     +-- id_rsa.pub.gpg
+    drwxr-xr-x 1  Admin  1049089    0  Sep 22 19:30 windows/
+    -rw-r--r-- 1  Admin  1049089  464  Sep 22 19:30   +-- ntlogin.gpg
+
+
+All the intelligence is determining the user id and root,
+
+and whether or not we have a custom user extension dir.
+
+So an equivalent powershell script could replicate pass.
+
+
+
+
+# Extension
+
+Now the simple design allows for additional bash extension scripts.
+
+For now, the only extension we require is pass-file (file secrets).
+
+
+
+## Pass-File
+
+
+Pass-file allows us to store complete files as secrets (instead of 1-line).
+
+That is, we can use it for multi-line secrets and even for secret binary files:
+
+SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
+
+
+    see [Pass-File](https://github.com/dvogt23/pass-file)
+
+
+    pass file help
+
+
+
+## Porting to Powershell
+
+
+Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
+
+Hashicorp Vault is just overkill for a lot of situations - ie if we we just want a Dev Box.
+
+The beauty of pass is we can run it anywhere: on windows, on linux, on serverless containers.
+
+.
+
+Something like:
+
+    GITBASH='C:\ProgramFiles\GitBash\' 
+    
+    gpg --decrypt %GITBASH%\.password-store\windows\ntlogin.gpg
+
+    ***********
+
+
+If we map the Gitbash POSIX user home to the Windows user home,
+
+Then we can have everything work together in perfect harmony.
+
+.
+
+For extra marks, we add a plugin to sync it to Hashicorp Vault.
+
+We can even add a plugin to sync Powershell Secret Management.
+
+We would then have a consistent secure workflow across the board.
+
+Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
+
+
+_TODO_
+
+
+
+
+
+## Agent Forwarding
+
+_TODO_
+
+* Add SSH-Agent
+  
+* Add GPG-Agent
+
+
+
+## Agent Tunneling
+
+
+### DMZ Bastion
+
+### Azure access
+
+### AWS access
+
+### Docker secrets
+
+### Kubernetes secrets
+
+
+
+
+
+# TODO
+
+_The next step is to figure out an organisational structure_
+
+_set up agent-forwarding: pick either ssh-agent or gpg-agent_
+
+* evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
+
+* evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
+  
+
+## Advanced Workflows
+
+
+We will add local Keepass, powershell, and browser plugins later (TODO).
+
+We may also consider adding more advanced tools for cloudops and devops IAC,
+
+depending on the workflow.
+
+    SOPS 
+    Hashicorp Vault 
+    Azure AKV, AWS KMS, GCPO KMS
+    Dokcer, Swarm, Kubernetes, Helm    
+
+
+
+
+# Integration
+
+_TODO_
+
+
+_Finally we should develop integration plugins_
+
+
+* integrate with SOPS Secrets-Operations
+
+* integrate with cloud clients AWS-KMS, Azure AKV, GCP KMS ?
+
+* integrate with HashiCorp Vault, Consul, Nomad, Terraform ?
+
+* integrate with Just-in-Time PIM Privilege Elevation ?
+
+* integrate with PowerShell Secrets Management ?
 
 
 
