@@ -240,9 +240,7 @@ Configure your Git user
 
 Create the `.password-store dir` as a Git repo:
 
-    cd ~
-    mkdir -p .password-store
-    git init .password-store
+    git init ~/.password-store
 
 
 Sample Output:
