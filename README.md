@@ -335,14 +335,6 @@ _where (***********) is your windows ntlogon password_.
     ***********
 
 
-### Limitations
-
-The principle behind pass is that it had to be a simple 100% bash command-line script.
-
-By design pass does one simple thing well: it stores a one-line secret in a text file.
-
-The text file can append name=value parameter pairs, but the first line is the secret.
-
 
 
 
@@ -428,12 +420,25 @@ So an equivalent powershell script could replicate pass.
 
 
 
+# Limitation
+
+The principle behind pass is that it had to be a simple 100% bash command-line script.
+
+By design pass does one simple thing well: it stores a one-line secret in a text file.
+
+The text file can append name=value parameter pairs, but the first line is the secret.
+
+
 
 # Extension
 
-Now the simple design allows for additional bash extension scripts.
+Now the simple design allows for additional extensions, usually as plain bash scripts.
 
-For now, the only extension we require is pass-file (file secrets).
+Though this doesn't have to be the case, any callable command can do (python, go, ruby).
+
+Extensions will depend on the Worklow (see Workflow above), and our common IAC toolkit.
+
+For now, the only extension we require (which is bundled-in) is pass-file (file secrets).
 
 
 
