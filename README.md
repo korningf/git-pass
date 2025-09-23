@@ -276,11 +276,11 @@ GPG will prompt for a passphrase on first use and and will try to remember it.
 
 .
 
-The mechanism may be 100% command-line, or it may involve a Windows PIN dialog.
+The mechanism may be 100% command-line, or it may involve a Windows GUI dialog.
 
-The workflow varies: when using an MSys or MinGW GPG this may be command-lne.
+The workflow varies: when using an MSys or MinGW GPG this may be command-line.
 
-When using GPG for Windows, this will use the Windows secure PIN entry dialog.
+When using GPG for Windows, this will use the Windows secure PIN Entry dialog.
 
 
 
@@ -293,6 +293,7 @@ When using GPG for Windows, this will use the Windows secure PIN entry dialog.
 ## Simple Secret 
 
 ![win-git-pass-insert-plain-secret.png](win-git-pass-insert-plain-secret.png "Insert a plain secret (windows ntlogin)")
+
 
 ### Store a secret (windows ntlogin)
 
@@ -331,8 +332,6 @@ _where (***********) is your windows ntlogon password_.
     pass windows/ntlogin
 
     ***********
-
-
 
 
 
@@ -462,9 +461,12 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
 Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
 
-Hashicorp Vault is just overkill for a lot of situations - ie if we we just want a Dev Box.
-
 The beauty of pass is we can run it anywhere: on windows, on linux, on serverless containers.
+
+The best would be to write a powershell program, pass.ps1, to use the native Secret Management,
+
+then have as one of its SecretManagement vaults be a wrapper to the GPG .password-store vault. 
+
 
 .
 
