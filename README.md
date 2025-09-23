@@ -23,7 +23,7 @@ minimal Windows POSIX shell on GitBash (SysGit, MSys, MSys2, or MinGW).
 
 Many corporate and instituional environments restrict allowed software.
 
-often to the frustration of Cloud Operators, Intergators, and Developers.
+often to the frustration of Cloud Operators, Integrators, and Developers.
 
 But cloudops and devops need to secure their machines and drive automation.
 
