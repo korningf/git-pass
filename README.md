@@ -58,9 +58,9 @@ I've patched it to work on gitbash (it should work on MSys and the others).
 
 #  Abstract
 
-The design of pass follows the UNIX / POSIX of composable simple commands.
+Pass follows the UNIX / POSIX design of using simple composable shell commands.
 
-It attempts to decouple dependencies, and do only one thing, and do it well.
+It attempts to decouple dependencies, and to do only one thing, and do it well.
 
 .
 
