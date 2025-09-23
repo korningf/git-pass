@@ -23,7 +23,7 @@ minimal Windows POSIX shell on GitBash (SysGit, MSys, MSys2, or MinGW).
 
 Many corporate and instituional environments restrict allowed software.
 
-often to the frustration of Cloud Operators, Itergators, and Developers.
+often to the frustration of Cloud Operators, Intergators, and Developers.
 
 But cloudops and devops need to secure their machines and drive automation.
 
@@ -33,7 +33,7 @@ GitPass is for those cases, where a full Cygwin POSIX is not sanctioned,
 
 Where only gitbash is allowed, where there is no PacMan package manager,
 
-and where we definitely do not have GNU automtools and GCC GLIBC toolchain.
+and where we definitely do not have GNU autotools or a GCC GLIBC toolchain.
 
 .
 
