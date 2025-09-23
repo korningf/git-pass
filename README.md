@@ -47,9 +47,9 @@ All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
 
 Though password-store is a 100% bash .sh script, it installs via a Makefile.
 
-Now Gnu Make will not present on corporate environment without a toolchain,
+Gnu Make will not be present on corporate environments without a toolchain,
 
-and the platform.sh script was broken for gitbash (an easy fix to mingw64).
+and the platform.sh script is broken for gitbash (it only expected cygwin).
 
 I've patched it to work on gitbash (it should work on MSys and the others).
 
