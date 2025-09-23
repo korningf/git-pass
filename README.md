@@ -4,9 +4,14 @@
   *Minimal Windows POSIX pass command*
 
 
-Git-Pass is a port of the POSIX pass command (aka password-store) 
+Git-Pass is a port of the POSIX / UNIX pass command (aka password-store)
 
-for a minimal Windows POSIX (GitBash, SysGit, MSys, MSys2, MinG64).
+adapted for corporate and institutional environments that only allow a
+
+minimal Windows POSIX shell on GitBash (SysGit, MSys, MSys2, or MinGW).
+
+
+
 
 
 ![win-git-pass-file-ssh-pubkey](win-git-pass-file-ssh-pubkey.png "Windows Git-Pass ssh-pubkey")
@@ -16,22 +21,48 @@ for a minimal Windows POSIX (GitBash, SysGit, MSys, MSys2, MinG64).
 
 # Motivation
 
+Many corporate and instituional environments restrict allowed software.
+
+often to the frustration of Cloud Operators, Itergators, and Developers.
+
+But cloudops and devops need to secure their machines and drive automation.
+
+.
+
+GitPass is for those cases, where a full Cygwin POSIX is not sanctioned,
+
+Where only gitbash is allowed, where there is no PacMan package manager,
+
+and where we definitely do not have GNU automtools and GCC GLIBC toolchain.
+
+.
+
+Ideally we want a simple portable POSIX command that works on all platforms.
+
 Pass is designed for portability and simplicity, it is almost 100% bash;
 
 All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
 
 .
 
-Though password-store is a bash .sh script, it installs via a Makefile.
+Though password-store is a 100% bash .sh script, it installs via a Makefile.
 
-Now Make is not always present, and the .sh script is broken for gitbash.
+Now Gnu Make will not present on corporate environment without a toolchain,
 
-I've patched it to work on gitbash (it will probably work on the others).
+and the platform.sh script was broken for gitbash (an easy fix to mingw64).
+
+I've patched it to work on gitbash (it should work on MSys and the others).
 
 .
 
 
 #  Abstract
+
+The design of pass follows the UNIX / POSIX of composable simple commands.
+
+It attempts to decouple dependencies, and do only one thing, and do it well.
+
+.
 
 This workflow is entirely based on portable, simple POSIX command-line.
 
@@ -45,9 +76,11 @@ The encryption uses state of the art RSA 4096 keys and a GnuPG keyring.
 
 .
 
-The directory structure is a Git repo, so it can be shared on machines.
+The directory structure can be a Git repo, it can be shared on machines.
 
-Each file in a .password-store directory holds a secret and parameters.
+Each .gpg file in a .password-store directory is an ecrypte secret-file.
+
+The 1st line is the secret, subsequent lines are name-value parameters.
 
 .
 
@@ -60,6 +93,10 @@ Typically, you put your SSH PEM keys, passwords, secrets, credentials.
 You use them from the command-line by unsealing them with the passphrase.
 
 There are a plethora of extension plugins that integrate password-store.
+
+
+
+
 
 
 
@@ -90,6 +127,9 @@ Example:
 #  Installation
 
 
+Clone this git repo and run the install script.
+
+    
     ./install.sh
 
 
@@ -339,11 +379,15 @@ _TODO_
 _Finally we should develop integration plugins_
 
 
-* integrate with HashiCorp Vault, Consul, etc ?
+* integrate with SOPS Secrets-Operations
 
-* integrate with PowerShell Secrets Management ?
+* integrate with cloud clients AWS-KMS, Azure AKV, GCP KMS ?
+
+* integrate with HashiCorp Vault, Consul, Nomad, Terraform ?
 
 * integrate with Just-in-Time PIM Privilege Elevation ?
+
+* integrate with PowerShell Secrets Management ?
 
 
 
@@ -420,6 +464,49 @@ Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
 _TODO_
 
 
+# Workflow
+
+
+We need to distinguish between Identity Secrets, and derived Data Secrets,
+
+to distinguish between Initial Trust authentication and derived automations. 
+
+.
+
+On the thin desktop client, we use git-pass to secure the Initial Trust,
+
+to secure Identity Secrets, things like OTP logins, SSH keys, PGP keys.
+
+That's where git-pass comes in.
+
+.
+
+We could try to add extension plugins and make it talk to everything.
+
+We shall try not to reinvent the wheel and use idustry-standard tools.
+
+.
+
+We will need to manage scope and temporary Landing Zone access credentials,
+
+to narrow a vendor cloud context to a specific root tenant and org account,
+
+or narrow a cloud managed kubernetes context to a desire kubernetes cluster.
+
+.
+
+The ideal strong security for secrets will use SOPS (Secrets-Operations).
+
+Mozilla SOPS is a neutral Cloud-Native-Foundation tool to secure IaC code,
+
+integrating with GPG, Hashicorp Vault, GCP KMS, AWS KMS, Azure AKV, etc.
+
+But that's on the CI/CD/CT factory and the server, and for Data Secrets.
+
+.
+
+We will address SOPS and cloud context scopes in a later project.
+
 
 
 
@@ -433,7 +520,6 @@ _TODO_
     gpg_hash=`gpg --list-secret-keys | head -5 | grep 'sec ' | xargs | cut -d ' ' -f 2`
 
 _TODO_
-
 
 
 
