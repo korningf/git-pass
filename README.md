@@ -8,7 +8,7 @@ Git-Pass is a port of the POSIX / UNIX pass command (aka password-store)
 
 adapted for corporate and institutional environments that only allow a
 
-minimal Windows POSIX shell on GitBash (SysGit, MSys, MSys2, or MinGW).
+minimal Windows POSIX shell on GitBash (or SysGit, MSys, MSys2, MinGW...).
 
 
 
