@@ -54,6 +54,28 @@ $EMAIL = "$USER@$DOMAIN"
 $STORE = "$env:USERPROFILE\.password-store"
 
 
+# List Secret
+function List-Secret {
+    param (
+        [string]$Store,
+        [string]$Email,
+        [string]$Path
+    )
+    $File = "$STORE\$Path"
+
+    if ( [System.IO.Directory]::Exists("$File")) {
+       echo ".\$Path"
+       tree /a /f "$File" | tail +4
+       return
+    }
+
+    if ( [System.IO.File]::Exists("$File.gpg")) {
+       echo ".\$Path"
+       return
+    }
+
+}
+
 # Set Secret
 function Set-Secret {
     param (
@@ -89,10 +111,47 @@ function Get-Secret {
        Write-Output "Secret $File.gpg not found: Exiting."
        return
     }
-    gpg --decrypt "$File.gpg" 2>$null
+
+    $Secret = gpg --decrypt "$File.gpg" 2>$null
+
+    echo $Secret
+    
+    return $Secret
+}
+
+# Del Secret
+function Del-Secret {
+    param (
+        [string]$Store,
+        [string]$Email,
+        [string]$Path,
+        [string]$Secret
+    )
+    $File = "$STORE\$Path"
+
+    if (! [System.IO.File]::Exists("$File.gpg")) {
+       Write-Output "Secret $File.gpg already exists: Exiting."
+       return
+    }
+
+    rm -f "$File.gpg"
 }
 
 
+# List secret
+List-Secret -Store $STORE -Email $EMAIL -Path ""
+
+# List secret
+List-Secret -Store $STORE -Email $EMAIL -Path "."
+
+# List secret
+List-Secret -Store $STORE -Email $EMAIL -Path "ssh"
+
+# List secret
+List-Secret -Store $STORE -Email $EMAIL -Path "windows"
+
+# List secret
+List-Secret -Store $STORE -Email $EMAIL -Path "windows\ntlogin"
 
 # Set secret
 Set-Secret -Store $STORE -Email $EMAIL -Path "windows\ntlogin" -Secret $Secret -Param "name=value"
@@ -102,3 +161,16 @@ $Secret = Get-Secret -Store $STORE -Email $EMAIL -Path "windows\ntlogin"
 
 echo $Secret
 
+
+
+
+# # Example array
+# $args = @("first", "second", "third")
+
+# # Shift operation
+# $firstArg = $args[0]  # Extract the first element
+# $args = $args[1..($args.Length - 1)]  # Keep the rest of the elements
+
+# # Output
+# Write-Output "First Argument: $firstArg"
+# Write-Output "Remaining Arguments: $args"
