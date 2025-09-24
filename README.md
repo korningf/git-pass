@@ -4,13 +4,11 @@
   *Minimal Windows POSIX pass command*
 
 
-Git-Pass is a port of the POSIX / UNIX pass command (aka password-store)
+Git-Pass is a port of the POSIX / UNIX pass command (aka password-store) for GitBash.
 
-adapted for corporate and institutional environments that only allow a
+It is meant for institutional contexts that only allow gitbash (or SysGit, MSys, MinGW).
 
-minimal Windows POSIX shell on GitBash (or SysGit, MSys, MSys2, MinGW...).
-
-
+.
 
 
 
@@ -21,11 +19,19 @@ minimal Windows POSIX shell on GitBash (or SysGit, MSys, MSys2, MinGW...).
 
 # Motivation
 
-Many corporate and instituional environments restrict allowed software.
+Many corporate and instituional environments use minimal thin client PCs
+
+and typically restrict downloads and the gamut of installable software,
 
 often to the frustration of Cloud Operators, Integrators, and Developers.
 
-But cloudops and devops need to secure their machines and drive automation.
+.
+
+Now cloudops and devops need to secure their machines and drive automation.
+
+For Convenience and for compliance to encrypt data at rest and in transit,
+
+it would be best to install a minimal low-footprint secure secret manager.
 
 .
 
@@ -33,15 +39,7 @@ GitPass is for those cases, where a full Cygwin POSIX is not sanctioned,
 
 Where only gitbash is allowed, where there is no PacMan package manager,
 
-and where we definitely do not have GNU autotools or a GCC GLIBC toolchain.
-
-.
-
-Ideally we want a simple portable POSIX command that works on all platforms.
-
-Pass is designed for portability and simplicity, it is almost 100% bash;
-
-All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
+and where we definitely do not have GNU autotools or a GLIBC toolchain.
 
 .
 
@@ -58,58 +56,76 @@ I've patched it to work on gitbash (it should work on MSys and the others).
 
 #  Abstract
 
+Password-Store is a secure Secrets Store aka a Secure Password-Manager or Vault.
+
 Pass follows the UNIX / POSIX design of using simple composable shell commands.
 
-It attempts to decouple dependencies, and to do only one thing, and do it well.
+Pass is designed for portability and simplicity, it is almost entirely 100% bash;
+
+All it requires is a POSIX bash shell with installed SSH, SSL, GPG, Git, and Tree.
 
 .
 
-This workflow is entirely based on portable, simple POSIX command-line.
+There are many such stores, from Keepass all the way to SOPS and Hashicorp Vault.
 
-Password-Store is a secure Secrets-Vault aka a Secure Password-Manager.
+Some are heavily UI based, and some require licensed binaries or cloud subscriptions.
 
-.
-
-It is basically a POSIX directory structure, encrypted via a passphrase.
-
-The encryption uses state of the art RSA 4096 keys and a GnuPG keyring.
+Many are proprietary and store the entire secrets database as a single opaque vault.
 
 .
 
-The directory structure can be a Git repo, it can be shared on machines.
+Pass is different. It is free, lightweight, with very well audited open-source code.
 
-Each .gpg file in a .password-store directory is an ecrypte secret-file.
+It is only a shell script that calls industry-standard tools like SSL, GPG, and Git.
 
-The 1st line is the secret, subsequent lines are name-value parameters.
-
-.
-
-The organisation therein is up to you (up to organisation's standards).
-
-Typically, you put your SSH PEM keys, passwords, secrets, credentials.
+The encryption uses state of the art crypto via RSA 4096 keys and a GnuPG keyring.
 
 .
 
-You use them from the command-line by unsealing them with the passphrase.
+The secrets database it just a regular directory, into which go encrypted secrets.
 
-There are a plethora of extension plugins that integrate password-store.
+This means secret pathnames can be easily located, indexed, globbed and queried.
+
+The directrory structure is extremely flexible (your own organization standards).
+
+.
+
+Now this directory can be also Git repo, so it can be shared with other machines.
+
+It can also be shared with other users, alternatively multiple vaults can be used.
+
+.
+
+Once decrypted, a secret file holds the plain text secret on its very first line.
+
+The rest of the file contains metadata, in the form of name-value parameter pairs.
+
+.
+
+Typically, you put your SSH PEM keys, passwords, secrets, identity credentials.
+
+You can use them from the command-line, the clipboard, or pipe them in commands.
+
+There are also a plethora of extension plugins that integrate with other systems.
 
 
 
 # Workflow
 
 
-We need to distinguish between Identity Secrets, and derived Data Secrets,
+We need to distinguish between Identity Secrets and derived Access Secrets,
 
-to distinguish between Initial Trust authentication and derived automations. 
+to distinguish Initial Trust authentication, from subsequent authorisations. 
 
 .
 
 On the thin desktop client, we use git-pass to secure the Initial Trust,
 
-to secure Identity Secrets, things like OTP logins, SSH keys, PGP keys.
+to establish Identity Secrets, things like OTP logins, SSH keys, PGP keys.
 
-That's where git-pass comes in.
+That's where git-pass comes in, to establish a secure connection or session.
+
+It is also useful for local desktop apps, for web proxy and web site access.
 
 .
 
@@ -157,9 +173,9 @@ Browse the official password-store docs For further documentation.
 
 Have an email identity to be used with the following:
 
+    - Git account
     - SSH keypair
     - GPG keyring
-    - Git account
 
 Example:
 
@@ -171,7 +187,6 @@ Example:
 
 
 In an admin gitbash shell, clone this repo and run the install script.
-
     
     ./install.sh
 
@@ -206,7 +221,7 @@ If necessary, generate an SSH keypair:
 
 If necessary, Generate your GPG keyring:
 
-    gpg --gen-key
+    gpg --full-generate-key
 
 
 Use following parameters:
@@ -226,13 +241,13 @@ Sample output:
 
 
 
-### Password-Store git repo
+### Password-Store Git repo
 
 
 ![win-git-pass-init-pass-store.png](win-git-pass-init-pass-store.png "Generate PGP keyring")
 
 
-Configure your Git user
+If necessary, configure your Git user
 
     git config --global user.name "John Doe"
     git config --global user.name "JohnDoe@email.com"    
@@ -240,12 +255,7 @@ Configure your Git user
 
 Create the `.password-store dir` as a Git repo:
 
-    cd ~
-    mkdir -p .password-store
-    git init .password-store
-
-
-Sample Output:
+    git init ~/.password-store
 
     Initialized empty Git repository in C:/Users/JohnDoe/.password-store/.git/
 
@@ -256,9 +266,6 @@ Sample Output:
 Initialize the  `.password-store` Pass database.
 
     pass init .password-store JohnDoe@email.com
-
-
-Sample Output:
 
     Password store initialized for .password-store, for identity: JohnDoe@Email.com.
     [master (root-commit) e6bcfa6] Set GPG id to .password-store, JohnDoe@Email.com.
@@ -278,11 +285,11 @@ GPG will prompt for a passphrase on first use and and will try to remember it.
 
 .
 
-The mechanism may be 100% command-line, or it may involve a Windows PIN dialog.
+The mechanism may be 100% command-line, or it may involve a Windows GUI dialog.
 
-The workflow varies: when using an MSys or MinGW GPG this may be command-lne.
+The workflow varies: when using an MSys or MinGW GPG this may be command-line.
 
-When using GPG for Windows, this will use the Windows secure PIN entry dialog.
+When using GPG for Windows, this will use the Windows secure PIN Entry dialog.
 
 
 
@@ -295,6 +302,7 @@ When using GPG for Windows, this will use the Windows secure PIN entry dialog.
 ## Simple Secret 
 
 ![win-git-pass-insert-plain-secret.png](win-git-pass-insert-plain-secret.png "Insert a plain secret (windows ntlogin)")
+
 
 ### Store a secret (windows ntlogin)
 
@@ -333,16 +341,6 @@ _where (***********) is your windows ntlogon password_.
     pass windows/ntlogin
 
     ***********
-
-
-### Limitations
-
-The principle behind pass is that it had to be a simple 100% bash command-line script.
-
-By design pass does one simple thing well: it stores a one-line secret in a text file.
-
-The text file can append name=value parameter pairs, but the first line is the secret.
-
 
 
 
@@ -396,6 +394,7 @@ The .password-store dir is just a plain control directory, accessed via conventi
 
 
     $ tree ~/.password-store
+    
     .
     |-- ssh
     |   `-- id_rsa
@@ -409,7 +408,8 @@ The .password-store dir is just a plain control directory, accessed via conventi
 
 Each secret is a '.gpg' encrypted with GnuPG.
 
-    $ ls -AlF
+    $ ls -AlF ~/.password-store/
+    
     total 5
     drwxr-xr-x 1  Admin  1049089    0  Sep 22 15:46 .git/
     -rw-r--r-- 1  Admin  1049089   26  Sep 18 17:16 .gpg-id
@@ -428,12 +428,25 @@ So an equivalent powershell script could replicate pass.
 
 
 
+# Limitation
+
+The principle behind pass is that it had to be a simple 100% bash command-line script.
+
+By design pass does one simple thing well: it stores a one-line secret in a text file.
+
+The text file can append name=value parameter pairs, but the first line is the secret.
+
+
 
 # Extension
 
-Now the simple design allows for additional bash extension scripts.
+Now the simple design allows for additional extensions, usually as plain bash scripts.
 
-For now, the only extension we require is pass-file (file secrets).
+Though this doesn't have to be the case, any callable command can do (python, go, ruby).
+
+Extensions will depend on the Workflow (see Workflow above), and our common IAC toolkit.
+
+For now, the only extension we require (which is bundled-in) is pass-file (file secrets).
 
 
 
@@ -459,9 +472,12 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
 Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
 
-Hashicorp Vault is just overkill for a lot of situations - ie if we we just want a Dev Box.
-
 The beauty of pass is we can run it anywhere: on windows, on linux, on serverless containers.
+
+The best would be to write a powershell program, pass.ps1, to use the native Secret Management,
+
+then have as one of its SecretManagement vaults be a wrapper to the GPG .password-store vault. 
+
 
 .
 
