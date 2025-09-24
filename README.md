@@ -221,7 +221,7 @@ If necessary, generate an SSH keypair:
 
 If necessary, Generate your GPG keyring:
 
-    gpg --gen-key
+    gpg --full-generate-key
 
 
 Use following parameters:
@@ -247,7 +247,7 @@ Sample output:
 ![win-git-pass-init-pass-store.png](win-git-pass-init-pass-store.png "Generate PGP keyring")
 
 
-Configure your Git user
+If necessary, configure your Git user
 
     git config --global user.name "John Doe"
     git config --global user.name "JohnDoe@email.com"    
