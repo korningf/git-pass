@@ -4,13 +4,11 @@
   *Minimal Windows POSIX pass command*
 
 
-Git-Pass is a port of the POSIX / UNIX pass command (aka password-store)
+Git-Pass is a port of the POSIX / UNIX pass command (aka password-store) for GitBash.
 
-adapted for corporate and institutional environments that only allow a
+It is meant for institutional contexts that only allow gitbash (or SysGit, MSys, MinGW).
 
-minimal Windows POSIX shell on GitBash (or SysGit, MSys, MSys2, MinGW...).
-
-
+.
 
 
 
@@ -21,11 +19,19 @@ minimal Windows POSIX shell on GitBash (or SysGit, MSys, MSys2, MinGW...).
 
 # Motivation
 
-Many corporate and instituional environments restrict allowed software.
+Many corporate and instituional environments use minimal thin client PCs
+
+and typically restrict downloads and the gamut of installable software,
 
 often to the frustration of Cloud Operators, Integrators, and Developers.
 
-But cloudops and devops need to secure their machines and drive automation.
+.
+
+Now cloudops and devops need to secure their machines and drive automation.
+
+For Convenience and for compliance to encrypt data at rest and in transit,
+
+it would be best to install a minimal low-footprint secure secret manager.
 
 .
 
@@ -33,7 +39,7 @@ GitPass is for those cases, where a full Cygwin POSIX is not sanctioned,
 
 Where only gitbash is allowed, where there is no PacMan package manager,
 
-and where we definitely do not have GNU autotools or a GCC GLIBC toolchain.
+and where we definitely do not have GNU autotools or a GLIBC toolchain.
 
 .
 
