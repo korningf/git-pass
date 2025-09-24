@@ -257,9 +257,6 @@ Create the `.password-store dir` as a Git repo:
 
     git init ~/.password-store
 
-
-Sample Output:
-
     Initialized empty Git repository in C:/Users/JohnDoe/.password-store/.git/
 
 
@@ -269,9 +266,6 @@ Sample Output:
 Initialize the  `.password-store` Pass database.
 
     pass init .password-store JohnDoe@email.com
-
-
-Sample Output:
 
     Password store initialized for .password-store, for identity: JohnDoe@Email.com.
     [master (root-commit) e6bcfa6] Set GPG id to .password-store, JohnDoe@Email.com.
@@ -400,6 +394,7 @@ The .password-store dir is just a plain control directory, accessed via conventi
 
 
     $ tree ~/.password-store
+    
     .
     |-- ssh
     |   `-- id_rsa
@@ -413,7 +408,8 @@ The .password-store dir is just a plain control directory, accessed via conventi
 
 Each secret is a '.gpg' encrypted with GnuPG.
 
-    $ ls -AlF
+    $ ls -AlF ~/.password-store/
+    
     total 5
     drwxr-xr-x 1  Admin  1049089    0  Sep 22 15:46 .git/
     -rw-r--r-- 1  Admin  1049089   26  Sep 18 17:16 .gpg-id
