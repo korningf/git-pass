@@ -60,9 +60,9 @@ Password-Store is a secure Secrets Store aka a Secure Password-Manager or Vault.
 
 Pass follows the UNIX / POSIX design of using simple composable shell commands.
 
-Pass is designed for portability and simplicity, it is almost 100% bash;
+Pass is designed for portability and simplicity, it is almost entirely 100% bash;
 
-All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
+All it requires is a POSIX bash shell with installed SSH, SSL, GPG, Git, and Tree.
 
 .
 
@@ -113,17 +113,19 @@ There are also a plethora of extension plugins that integrate with other systems
 # Workflow
 
 
-We need to distinguish between Identity Secrets, and derived Data Secrets,
+We need to distinguish between Identity Secrets and derived Access Secrets,
 
-to distinguish between Initial Trust authentication and derived automations. 
+to distinguish Initial Trust authentication, from subsequent authorisations. 
 
 .
 
 On the thin desktop client, we use git-pass to secure the Initial Trust,
 
-to secure Identity Secrets, things like OTP logins, SSH keys, PGP keys.
+to establish Identity Secrets, things like OTP logins, SSH keys, PGP keys.
 
-That's where git-pass comes in.
+That's where git-pass comes in, to establish a secure connection or session.
+
+It is also useful for local desktop apps, for web proxy and web site access.
 
 .
 
