@@ -448,7 +448,7 @@ Now the simple design allows for additional extensions, usually as plain bash sc
 
 Though this doesn't have to be the case, any callable command can do (python, go, ruby).
 
-Extensions will depend on the Worklow (see Workflow above), and our common IAC toolkit.
+Extensions will depend on the Workflow (see Workflow above), and our common IAC toolkit.
 
 For now, the only extension we require (which is bundled-in) is pass-file (file secrets).
 
