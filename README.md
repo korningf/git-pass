@@ -37,14 +37,6 @@ and where we definitely do not have GNU autotools or a GCC GLIBC toolchain.
 
 .
 
-Ideally we want a simple portable POSIX command that works on all platforms.
-
-Pass is designed for portability and simplicity, it is almost 100% bash;
-
-All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
-
-.
-
 Though password-store is a 100% bash .sh script, it installs via a Makefile.
 
 Gnu Make will not be present on corporate environments without a toolchain,
@@ -58,41 +50,57 @@ I've patched it to work on gitbash (it should work on MSys and the others).
 
 #  Abstract
 
+Password-Store is a secure Secrets Store aka a Secure Password-Manager or Vault.
+
 Pass follows the UNIX / POSIX design of using simple composable shell commands.
 
-It attempts to decouple dependencies, and to do only one thing, and do it well.
+Pass is designed for portability and simplicity, it is almost 100% bash;
+
+All it requires is a POSIX BASH shell with SSH, SSL, GPG, Git, and Tree.
 
 .
 
-This workflow is entirely based on portable, simple POSIX command-line.
+There are many such stores, from Keepass all the way to SOPS and Hashicorp Vault.
 
-Password-Store is a secure Secrets-Vault aka a Secure Password-Manager.
+Some are heavily UI based, and some require licensed binaries or cloud subscriptions.
 
-.
-
-It is basically a POSIX directory structure, encrypted via a passphrase.
-
-The encryption uses state of the art RSA 4096 keys and a GnuPG keyring.
+Many are proprietary and store the entire secrets database as a single opaque vault.
 
 .
 
-The directory structure can be a Git repo, it can be shared on machines.
+Pass is different. It is free, lightweight, with very well audited open-source code.
 
-Each .gpg file in a .password-store directory is an ecrypte secret-file.
+It is only a shell script that calls industry-standard tools like SSL, GPG, and Git.
 
-The 1st line is the secret, subsequent lines are name-value parameters.
-
-.
-
-The organisation therein is up to you (up to organisation's standards).
-
-Typically, you put your SSH PEM keys, passwords, secrets, credentials.
+The encryption uses state of the art crypto via RSA 4096 keys and a GnuPG keyring.
 
 .
 
-You use them from the command-line by unsealing them with the passphrase.
+The secrets database it just a regular directory, into which go encrypted secrets.
 
-There are a plethora of extension plugins that integrate password-store.
+This means secret pathnames can be easily located, indexed, globbed and queried.
+
+The directrory structure is extremely flexible (your own organization standards).
+
+.
+
+Now this directory can be also Git repo, so it can be shared with other machines.
+
+It can also be shared with other users, alternatively multiple vaults can be used.
+
+.
+
+Once decrypted, a secret file holds the plain text secret on its very first line.
+
+The rest of the file contains metadata, in the form of name-value parameter pairs.
+
+.
+
+Typically, you put your SSH PEM keys, passwords, secrets, identity credentials.
+
+You can use them from the command-line, the clipboard, or pipe them in commands.
+
+There are also a plethora of extension plugins that integrate with other systems.
 
 
 
@@ -157,9 +165,9 @@ Browse the official password-store docs For further documentation.
 
 Have an email identity to be used with the following:
 
+    - Git account
     - SSH keypair
     - GPG keyring
-    - Git account
 
 Example:
 
@@ -171,7 +179,6 @@ Example:
 
 
 In an admin gitbash shell, clone this repo and run the install script.
-
     
     ./install.sh
 
@@ -226,7 +233,7 @@ Sample output:
 
 
 
-### Password-Store git repo
+### Password-Store Git repo
 
 
 ![win-git-pass-init-pass-store.png](win-git-pass-init-pass-store.png "Generate PGP keyring")
