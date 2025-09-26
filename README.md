@@ -6,7 +6,7 @@
 
 Git-Pass is a port of the POSIX pass command (aka password-store) for GitBash and Powershell.
 
-It is meant for institutional thin-client desktops that only allow a minimal GitBash shell.
+It is meant for institutional thin-client windows PCs that only allow a minimal GitBash shell.
 
 
 
