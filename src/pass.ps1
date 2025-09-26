@@ -10,50 +10,51 @@
 #
 # Git-Pass is a port of the POSIX pass command (aka password-store),
 # for institutional desktops that only allow a limited Gitbash shell.
-#
+
 # Pass is a secure Secrets Store aka a Secure Password-Manager or Vault.
 # It follows the POSIX design of using simple composable shell commands.
 # It is meant for portability and simplicity -it is mostly shell-diven;
 # all it needs is a shell with installed SSH, SSL, GPG, Git, and Tree.
-#
+
 # Our architecture design seeks simplicity, portability, and consistency.
 # Pass gives us a consistent secret manager accross windows, linux, & unix,
 # even on corporate or institutional minimal thin-client windows desktops.
 # Git-Pass includes our own `pass.ps1` script porting pass to powershell.
-#
+
 # There are many secret stores, from Keepass to SOPS and Hashicorp Vault.
 # Many are UI based and may use licensed binaries or cloud subscriptions.
 # Many are proprietary and store their database as a single opaque vault.
-# 
+
 # Pass is free, lightweight, portable, with well audited open-source code.
 # It is but a script that calls industry-standard OSS tools: SSL, GPG, Git.
 # The encryption uses state of the art crypto via RSA keys and a GPG keys.
-# 
+
 # The vault is just a directory tree, into which go our encrypted secrets.
 # Thus secret names can be easily located, indexed, globbed, and queried.
 # This open directory structure makes it extremely adaptable and flexible.
-# 
+
 # The directory can also be a Git repo and can be shared over machines.
 # It can also be shared with other users or multiple vaults can be used.
-# 
+
 # The secret file format holds a plain text secret on its very first line;
 # the rest of the file may contain metadata as name-value parameter pairs.
-# 
+
 # You can use it for passwords, secrets, identity credentials, SSH PEM keys.
 # They can be invoked or piped in a command-line or pasted to the clipboard.
 # Pass has a plethora of extension plugins to integrate with other systems.
-#
+
 # The only extension we require is pass-file to encrypt entire files.
-# We use this to encrypt SSH private keys and Certifcate private keys.
+# We use this to encrypt SSH private keys and Certificate private keys.
 # Now we could just secure keys with a passphrase - pass simplifies this
-# by providing a single interface api to unify all our private secrets
+# by providing a single API interface to unify all our private secrets
 # in a single vault with a single passphrase.
-#
-# Now because it relies on bare tools, pass can be ported to Powershell,
-# which means we can use the same interface for both Bash and Powershell.
+
+
+# Now because it is but a script that calls other minimal POSIX commands,
+# we can adapt it and have a common interface for both Bash and Powershell.
 # For added portability, we can implement the PowerShel.SecretManagement
-# ISecureVault, allowing it to integrate with windows application stacks.
-#
+# ISecureVault API and integrate with the windows application ecosystem.
+
 
 
 #
