@@ -53,6 +53,17 @@ I've patched it to work on gitbash (it should work on MSys and the others).
 
 .
 
+I've also ported the pass script to powershell and exposed its interface
+
+as a Microsoft windows object (a PowerShell.SecretManagement ISecureVault).
+
+We can use it everywhere: on unix, linux, windows powershell and gitbash !
+
+.
+
+Portability, Simplicity, Security.
+
+
 
 #  Abstract
 
