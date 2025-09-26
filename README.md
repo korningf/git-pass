@@ -4,11 +4,11 @@
   *Minimal Windows POSIX pass command*
 
 
-Git-Pass is a port of the POSIX / UNIX pass command (aka password-store) for GitBash.
+Git-Pass is a port of the POSIX pass command (aka password-store) for GitBash and Powershell.
 
-It is meant for institutional contexts that only allow gitbash (or SysGit, MSys, MinGW).
+It is meant for institutional thin-client desktops that only allow a minimal GitBash shell.
 
-.
+
 
 
 
@@ -56,58 +56,97 @@ I've patched it to work on gitbash (it should work on MSys and the others).
 
 #  Abstract
 
-Password-Store is a secure Secrets Store aka a Secure Password-Manager or Vault.
+Git-Pass is a port of the POSIX pass command (aka password-store),
 
-Pass follows the UNIX / POSIX design of using simple composable shell commands.
-
-Pass is designed for portability and simplicity, it is almost entirely 100% bash;
-
-All it requires is a POSIX bash shell with installed SSH, SSL, GPG, Git, and Tree.
+for institutional desktops that only allow a limited Gitbash shell.
 
 .
 
-There are many such stores, from Keepass all the way to SOPS and Hashicorp Vault.
+Pass is a secure Secrets Store aka a Secure Password-Manager or Vault.
 
-Some are heavily UI based, and some require licensed binaries or cloud subscriptions.
+It follows the POSIX design of using simple composable shell commands.
 
-Many are proprietary and store the entire secrets database as a single opaque vault.
+It is meant for portability and simplicity -it is mostly shell-diven;
 
-.
-
-Pass is different. It is free, lightweight, with very well audited open-source code.
-
-It is only a shell script that calls industry-standard tools like SSL, GPG, and Git.
-
-The encryption uses state of the art crypto via RSA 4096 keys and a GnuPG keyring.
+all it needs is a shell with installed SSH, SSL, GPG, Git, and Tree.
 
 .
 
-The secrets database it just a regular directory, into which go encrypted secrets.
+Our architecture design seeks simplicity, portability, and consistency.
 
-This means secret pathnames can be easily located, indexed, globbed and queried.
+Pass gives us a consistent secret manager accross windows, linux, & unix,
 
-The directrory structure is extremely flexible (your own organization standards).
+even on corporate or institutional minimal thin-client windows desktops.
 
-.
-
-Now this directory can be also Git repo, so it can be shared with other machines.
-
-It can also be shared with other users, alternatively multiple vaults can be used.
+Git-Pass includes our own `pass.ps1` script porting pass to powershell.
 
 .
 
-Once decrypted, a secret file holds the plain text secret on its very first line.
+There are many secret stores, from Keepass to SOPS and Hashicorp Vault.
 
-The rest of the file contains metadata, in the form of name-value parameter pairs.
+Many are UI based and may use licensed binaries or cloud subscriptions.
+
+Many are proprietary and store their database as a single opaque vault.
 
 .
 
-Typically, you put your SSH PEM keys, passwords, secrets, identity credentials.
+Pass is free, lightweight, portable, with well audited open-source code.
 
-You can use them from the command-line, the clipboard, or pipe them in commands.
+It is but a script that calls industry-standard OSS tools: SSL, GPG, Git.
 
-There are also a plethora of extension plugins that integrate with other systems.
+The encryption uses state of the art crypto via RSA keys and a GPG keys.
 
+.
+
+The vault is just a directory tree, into which go our encrypted secrets.
+
+Thus secret names can be easily located, indexed, globbed, and queried.
+
+This open directory structure makes it extremely adaptable and flexible.
+
+.
+
+The directory can also be a Git repo and can be shared over machines.
+
+It can also be shared with other users or multiple vaults can be used.
+
+.
+
+The secret file format holds a plain text secret on its very first line;
+
+the rest of the file may contain metadata as name-value parameter pairs.
+
+.
+
+You can use it for passwords, secrets, identity credentials, SSH PEM keys.
+
+They can be invoked or piped in a command-line or pasted to the clipboard.
+
+Pass has a plethora of extension plugins to integrate with other systems.
+
+.
+
+The only extension we require is pass-file to encrypt entire files.
+
+We use this to encrypt SSH private keys and Certifcate private keys.
+
+Now we could just secure keys with a passphrase - pass simplifies this
+
+by providing a single interface api to unify all our private secrets
+
+in a single vault with a single passphrase.
+
+.
+
+Now because it is but a script that calls other minimal POSIX commands,
+
+we can adapt it and have a common interface for both Bash and Powershell.
+
+For added portability, we can implement the PowerShel.SecretManagement
+
+ISecureVault, allowing it to integrate with windows application stacks.
+
+.
 
 
 # Workflow
@@ -115,7 +154,7 @@ There are also a plethora of extension plugins that integrate with other systems
 
 We need to distinguish between Identity Secrets and derived Access Secrets,
 
-to distinguish Initial Trust authentication, from subsequent authorisations. 
+to isolate the Initial Trust authentication from subsequent authorisations. 
 
 .
 
