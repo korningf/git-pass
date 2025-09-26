@@ -19,7 +19,7 @@ It is meant for institutional thin-client windows PCs that only allow a minimal 
 
 # Motivation
 
-Many corporate and instituional environments use minimal thin client PCs
+Many corporate and institutional environments use minimal thin client PCs
 
 and typically restrict downloads and the gamut of installable software,
 
@@ -139,11 +139,11 @@ Pass has a plethora of extension plugins to integrate with other systems.
 
 The only extension we require is pass-file to encrypt entire files.
 
-We use this to encrypt SSH private keys and Certifcate private keys.
+We use this to encrypt SSH private keys and Certificate private keys.
 
 Now we could just secure keys with a passphrase - pass simplifies this
 
-by providing a single interface api to unify all our private secrets
+by providing a single API interface to unify all our private secrets
 
 in a single vault with a single passphrase.
 
@@ -214,8 +214,9 @@ For the TLDR keep on reading this doc and following instructions.
 
 Browse the official password-store docs For further documentation.
 
-    [UNIX Password-Store](https://www.passwordstore.org/)
+[Original Manual](https://git.zx2c4.com/password-store/about/)
 
+[Original project](https://www.passwordstore.org/)
 
 
 
@@ -248,7 +249,7 @@ In an admin gitbash shell, clone this repo and run the install script.
 
 ### Memorable Passphrase
 
-Pick a (Memorable Passphrase)[https://strongphrase.net/]
+Pick a [Memorable Passphrase](https://strongphrase.net/)
 
 
 
@@ -434,8 +435,7 @@ This would be maximum security, as there would be no secrets persisted in the cl
 
 
 
-
-# Exploration
+# Specification
 
 
 OK so internally, the simplicity of the .password-store design and structure rocks.
@@ -478,7 +478,19 @@ So an equivalent powershell script could replicate pass.
 
 
 
-# Limitation
+# Limitations
+
+Pass provides encryption of Data at Rest: it will safely store all your private keys.
+
+These keys in turn are used to establish secure seesion and encrypt Data in Transit.
+
+.
+
+Pass by design provides security but not total secrecy: it does not hide secret names.
+
+This transparent directory structure gives maximum portability and shell compatibility.
+
+.
 
 The principle behind pass is that it had to be a simple 100% bash command-line script.
 
@@ -488,7 +500,7 @@ The text file can append name=value parameter pairs, but the first line is the s
 
 
 
-# Extension
+# Extensions
 
 Now the simple design allows for additional extensions, usually as plain bash scripts.
 
@@ -664,15 +676,25 @@ Stephane Korning (stefuss@yahoo.com) for the idea to port POSIX pass to Gitbash.
 
 ### Pass
 
-The Pass code is 99.999% verbatim from password-store by Jason Donenfeld.
+The Pass code is 99.999% verbatim from password-store by Jason Donenfeld at ZX2C4.
 
 The patch is basically just packaging of install.sh, and Tree and pass-file.
 
+
 [Original README](README)
+
+[Original Manual](https://git.zx2c4.com/password-store/about/)
 
 [Original project](https://www.passwordstore.org/)
 
 [Original source](https://git.zx2c4.com/password-store/)
+
+
+Jason is a senior security consultant and researcher, his work is at ZX2C4.
+
+[ZX2C4](https://www.zx2c4.com/)
+
+[Jason Doenefeld](https://www.jasondonenfeld.com/)
 
 
 ### Tree
@@ -702,4 +724,5 @@ _TODO evaluate which is better ? - sticking to the GNU license one for now !_
 
 # LICENSE
 
-GNU GPL, as per [LICENSE](COPYING)
+All code, including pass-file and tree, is GNU GPL as per [LICENSE](COPYING).
+
