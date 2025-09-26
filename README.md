@@ -155,7 +155,7 @@ we can adapt it and have a common interface for both Bash and Powershell.
 
 For added portability, we can implement the PowerShel.SecretManagement
 
-ISecureVault, allowing it to integrate with windows application stacks.
+ISecureVault API and integrate with the windows application ecosystem.
 
 .
 
