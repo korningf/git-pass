@@ -25,6 +25,8 @@
 # Many are UI based and may use licensed binaries or cloud subscriptions.
 # Many are proprietary and store their database as a single opaque vault.
 
+# Pass is different. By design it is open and transparent in its workings.
+
 # Pass is free, lightweight, portable, with well audited open-source code.
 # It is but a script that calls industry-standard OSS tools: SSL, GPG, Git.
 # The encryption uses state of the art crypto via RSA keys and a GPG keys.
@@ -55,76 +57,97 @@
 # For added portability, we can implement the PowerShel.SecretManagement
 # ISecureVault API and integrate with the windows application ecosystem.
 
-
-
-#
 # For extension plugins, the general design is the path comes last,
 # in order to parse and shift subcommands and their option switches;
 # that is, the very last non-switch arg should be a store pathname.
+
 #
+# Basic-Usage:
 #
+#   (*)
+#   pass                                        [<path]
+#   pass [list|ls]                              [<dir>]
+#   pass [show|get]   [-c|clip]                 [<path>]
+#   
+#   (!) 
+#   pass insert|set   [-f|force] [-m|multiline]  <path>
+#       
+#   pass help|usage
 #
-# pass                  --> lists all secrets
-# pass dir              --> lists dir secrets
-# pass name             --> shows secret
-# pass --clip name      --> copies secret to clipboard
+#   
+# Special-Usage: 
 #
+#   (TODO)
+#   pass vi|edit      <path>
+#   pass rm|remove    [-f|force] [-r|recurse]    <path>
+#   pass mv|move      [-f|force] [-r|recurse]    <path>  <dest>
+#   pass cp|copy      [-f|force] [-r|recurse]    <path>  <dest>
+#   
 #
-# Usage:
+# Pass-File:
 # 
-#   pass                                        [path] ! 
-#   pass [show|get]   [-c|clip]                  path
-#   pass [list|ls]                              [dir]
-#   pass insert|set   [-f|force] [-m|multiline]  name *
-#   pass rm|remove    [-f|force] [-r|recurse]    path *
-#   pass mv|move      [-f|force] [-r|recurse]    path *
-#   pass cp|copy      [-f|force] [-r|recurse]    path *
-#   pass help|usage   
+#   (+)  
+#   pass file add     <file>        <dir>
+#   pass file get                   <dir/name>
+#   
+   
+# Notes and Examples:
 #
+# Basic Usage:
 #
-# File:
-#
-#   pass file add     file    dir
-#   pass file get             dir/name    
-#
-# (!)
+# (*)
 # Pass accepts a convenience shortcut invocation without a command.
 # - will show the secret if the path maps a file (named $path.pgp).
 # - will list the secrets if if the path masp to a directory name.
 #
-# (*)
+# dir:
+#   pass      /ssh
+#   pass list /ssh                 (equivalent if keys is a folder)
+# 
+# file: 
+#   pass      /ssh/id_rsa 
+#   pass show /ssh/id_rsa          (equivalent if id_rsa is a file)
+#
+# 
+# (!)
 # Pass is very POSIX and uses -f --force and -r --recurse switches,
 # allowing to reorganise gpg secrets and their directrory structure;
 # -m --multiline reads a multiline secret from stdin (EOD = CTRL-D).
 #
+# ex: "
+#   pass insert -f /windows/ntlogin    (insert or replace a secret)
+#
+
+# Special Usage: 
+#
+#   (TODO)
+#   pass vi|edit      <path> 
+#   pass rm|remove    [-f|force] [-r|recurse]    <path> 
+#   pass mv|move      [-f|force] [-r|recurse]    <from>  <path> 
+#   pass cp|copy      [-f|force] [-r|recurse]    <from>  <path> 
+#
+#
+
+# Pass-File:
 #
 # (+)
-#
 # Pass-File stores files in the subdirectory specified by the path:
-#
-# Add file:                                      (stores files in subdirectory)   
-#
-#   pass file add ~/.ssh/id_rsa     ssh/id_rsa    ->  ssh/id_rsa/id_rsa.gpg
-#   pass file add ~/.ssh/id_rsa.pem ssh/id_rsa    ->  ssh/id_rsa/id_rsa.pem.gpg
-#   pass file add ~/.ssh/id_rsa.pub ssh/id_rsa    ->  ssh/id_rsa/id_rsa.pub.gpg
-#
-# Get file:                                      (specify directory + name)
-#
-#   pass file get ssh/id_rsa/id_rsa
-#   pass show ssh/id_rsa/id_rsa                  (*equivalent for text files)
-#
 # Note Pass-file works exactly like a reglar 'pass --multiline' call,
 # the only difference being it does not prompt to enter the contents.
 #
+# 
+# ex: 
+#   pass file add   ~/.ssh/id_rsa   ssh   (will add to ssh subdir)
+# 
+#   pass file get   ssh/id_rsa
+#   pass show       ssh/id_rsa           (equivalent for text files)
+#
+
+#
 # If the file is text, 'pass show' works just like 'pass file get',
 # file contents can be copied to the clipboard using 'pass --clip'.
-#
 # But if the file is binary, it outputs the raw binary file contents.
 # In such case, you should redirect the binary output stream to a file.
-#
-# Binary file:
-#
-#    pass file get ssh/id_rsa/id_rsa.der > ~/.ssh/id_rsa.der
 #
 # Note the binary machine encoding stays the same as its original creation,
 # so if you share binary files across machines using git or other means,
@@ -133,11 +156,12 @@
 # It does not currently allow to copy a binary COM object to clipboard,
 # this would be great for images like QR codes (investigate COM images).
 #
-# Speaking of QR codes, the original pass command supports 'pass ---qrcode' 
-# and calls 'qrencode` to generate a QR code for a text secret or password;
-# it places it on the XWindows clipboard (so why not the Windows clipboard).
-# Now it would be really great to port this to windows, but that requires a
-# lot of work.
+# On QR codes, the original pass command supports 'pass ---qrcode' and
+# calls 'qrencode` to generate a QR code for a text secret or password,
+# placing it on the XWindows clipboard (not sure which format GIF, SVG?).
+# It should be possible to port this to windows, but that would require
+# graphics components which we probably do not have on an institutional
+# minimal thin client desktop.
 #
 
 
@@ -192,101 +216,267 @@ $EMAIL = "$USER@$DOMAIN"
 $STORE = "$env:USERPROFILE\.password-store"
 
 
-# List Secret
+
+# Usage Help
+function Help {
+    echo " "
+    echo " Git-Pass is a port of the POSIX pass command (aka password-store), "
+    echo " for institutional windows desktops using a limited Gitbash shell.  "
+    echo " "
+    echo " We have ported it to GitBash and coded an equivalent for PowerShell. "
+    echo " The code is GPL and is lives at https://github.com/korningf/git-pass/ "
+    echo " (c) copyleft-GPL 2025  Francis Korning de Grandpre fkorning@gmail.com "
+    echo " "
+    echo " See the original pass from Jason Donenfeld: https://passwordstore.org "
+    echo " The OSS code is part of zx2c4: https://git.zx2c4.com/password-store/ "
+    echo " "
+    echo " "
+    echo " Basic-Usage: "
+    echo " "
+    echo "   (*) "
+    echo "   pass                                        [<path] "
+    echo "   pass [list|ls]                              [<dir>] "
+    echo "   pass [show|get]   [-c|clip]                 [<path>] "
+    echo " "
+    echo "   (!) "
+    echo "   pass insert|set   [-f|force] [-m|multiline]  <name> "
+    echo " "    
+    echo "   pass help|usage "
+    echo " "
+    echo " "    
+    echo " Special-Usage: "
+    echo " "      
+    echo "   (TODO)"
+    echo "   pass vi|edit      <path> "
+    echo "   pass rm|remove    [-f|force] [-r|recurse]    <path> "
+    echo "   pass mv|move      [-f|force] [-r|recurse]    <path>  <dest> "
+    echo "   pass cp|copy      [-f|force] [-r|recurse]    <path>  <dest> "
+    echo " "
+    echo " "
+    echo " Pass-File: "
+    echo " "
+    echo "   (+)"
+    echo "   pass file add     <file>        <dir> "
+    echo "   pass file get                   <dir/name>  "
+    echo " "
+    echo " "
+    echo " Notes: "
+    echo " "
+    echo " (*) "
+    echo " Pass accepts a convenience shortcut invocation without a command. "
+    echo " - will show the secret if the path maps a file (named path.pgp). "
+    echo " - will list the secrets if if the path masp to a directory name. "
+    echo " "
+    echo " dir: "
+    echo "   pass      /ssh "
+    echo "   pass list /ssh                 (equivalent if keys is a folder) "
+    echo " "
+    echo " file: "
+    echo "   pass      /ssh/id_rsa "
+    echo "   pass show /ssh/id_rsa          (equivalent if id_rsa is a file) "
+    echo " "
+    echo " "
+    echo " (!) "
+    echo " Pass is very POSIX and uses -f --force and -r --recurse switches, "
+    echo " allowing to reorganise gpg secrets and their directrory structure; "
+    echo " -m --multiline reads a multiline secret from stdin (EOD = CTRL-D). "
+    echo " "
+    echo " ex: "
+    echo "   pass insert -f /windows/ntlogin    (insert or replace a secret) "
+    echo " "
+    echo " "
+    echo " (+) "
+    echo " Pass-File stores files in the subdirectory specified by the path: "
+    echo " "
+    echo " ex: "
+    echo "   pass file add   ~/.ssh/id_rsa   ssh   (will add to ssh subdir) "
+    echo " "
+    echo "   pass file get   ssh/id_rsa "
+    echo "   pass show       ssh/id_rsa           (equivalent for text files) "
+    echo " "
+    echo " Note Pass-file works exactly like a reglar 'pass --multiline' call, "
+    echo " the only difference being it does not prompt to enter the contents. "
+    echo " "
+    echo " If the file is text, 'pass show' works just like 'pass file get', "
+    echo " file contents can be copied to the clipboard using 'pass --clip'. "
+    echo " "
+    echo " But if the file is binary, it outputs the raw binary file contents. "
+
+    echo " In such case, you should redirect the binary output stream to a file. "
+    echo " "
+    echo " Binary file: "
+    echo " "
+    echo "    pass file add   ~/.ssh/id_rsa.der       ssh/id_rsa "
+    echo "    pass file get   ssh/id_rsa.der      >   ~/.ssh/id_rsa.der "
+    echo " "
+    echo " "
+}
+
+
+# 
+
 function List-Secret {
     param (
         [string]$Store,
         [string]$Email,
-        [string]$Name
+        [string]$name        
     )
-    $Path = "$STORE\$Name"
+    $path = "$STORE\$name"
 
-    if ( [System.IO.Directory]::Exists("$Path")) {
-       echo ".\$Name"
-       tree /a /f "$Path" | tail +4
+    echo "$path"
+    exit 0
+
+    # root
+    if ( "$name" -eq "" -or "$name" -eq "." -or "$name" -eq "/" -or "$name" -eq "\") {
+       #tree /a /f "$path" | tail +4 | sed -e 's/\.gpg$//g'
+       tree /a /f "$STORE" | tail +4
        return
     }
 
-    if ( [System.IO.File]::Exists("$Path.gpg")) {
-       echo ".\$Name"
+    # dir
+    if ( [System.IO.Directory]::Exists("$path")) {
+       echo ".\$name"
+       #tree /a /f "$path" | tail +4 | sed -e 's/\.gpg$//g'
+       tree /a /f "$path" | tail +4
+       return
+    }
+
+    # file
+    if ( [System.IO.File]::Exists("$path.gpg")) {
+       echo ".\$name"
        return
     }
 
 }
 
-# Set Secret
+# Set-Secret
 function Set-Secret {
     param (
         [string]$Store,
         [string]$Email,
-        [string]$Name,
-        [string]$Secret,
-        [string]$Param
+        [string]$name,
+        [string]$force,
+        [string]$multiline
     )
-    $Path = "$STORE\$Name"
+    $path = "$STORE\$name"
 
-    if ( [System.IO.File]::Exists("$Path.gpg")) {
-       Write-Output "Secret $Path.gpg already exists: Exiting."
+    if ( [System.IO.File]::Exists("$path.gpg")) {
+       Write-Output "(INVALID insert): Secret $path.gpg already exists: Exiting."
        return
     }
 
-    #echo "$Secret" > "$Path.txt"
-    #gpg --output "$Path.gpg" --encrypt --recipient "$Email" "$Path.txt"
-    #rm -f "$Path.txt"
-
-    $input | gpg --output "$Path.gpg" --encrypt --recipient "$Email"
+    $input | gpg --output "$path.gpg" --encrypt --recipient "$Email"
 }
 
 
-# Get Secret
+# Get-Secret
 function Get-Secret {
     param (
         [string]$Store,
         [string]$Email,
-        [string]$Name
+        [string]$name
     )
-    $Path = "$STORE\$Name"
+    $path = "$STORE\$name"
 
-    if (-not [System.IO.File]::Exists("$Path.gpg")) {
-       Write-Output "Secret $Path.gpg not found: Exiting."
+    if (-not [System.IO.File]::Exists("$path.gpg")) {
+       Write-Output "Secret $path.gpg not found: Exiting."
        return
     }
 
-    $Secret = gpg --decrypt "$Path.gpg" 2>$null
+    $Secret = gpg --decrypt "$path.gpg" 2>$null
 
     echo $Secret
     
     return $Secret
 }
 
-# Del Secret
+# Del-Secret
 function Del-Secret {
     param (
         [string]$Store,
         [string]$Email,
-        [string]$Name,
-        [string]$Secret
+        [string]$name,
+        [string]$force,
+        [string]$recurse
     )
-    $Path = "$STORE\$Name"
+    $path = "$STORE\$name"
 
-    if (! [System.IO.File]::Exists("$Path.gpg")) {
-       Write-Output "Secret $Path.gpg already exists: Exiting."
-       return
+    if (! [System.IO.File]::Exists("$path.gpg")) {
+       Write-Output "(INVALID Remove): Secret $path.gpg not found: Exiting."
+       exit 1
     }
 
-    rm -f "$Path.gpg"
+    rm -f "$path.gpg"
 }
 
 
+# Move-Secret
+function Move-Secret {
+    param (
+        [string]$Store,
+        [string]$Email,
+        [string]$name,
+        [string]$dest,        
+        [string]$force
+    )
 
+    $source = "$STORE\$name"
+    $target = "$STORE\$dest"
+
+    # source directory
+    if ([System.IO.Directory]::Exists("$source")) {
+        mv "$force" "$source" "$target"
+    }
+    # source file
+    elseif ([System.IO.File]::Exists("$source.gpg")) {
+        mv "$force" "$source.gpg" "$target"
+    }
+    # source missing
+    else {
+       Write-Output "(INVALID move): Source $source not found: Exiting."
+       exit 1
+    }
+
+}
+
+
+# Copy-Secret
+function Copy-Secret {
+    param (
+        [string]$Store,
+        [string]$Email,
+        [string]$name,
+        [string]$dest,        
+        [string]$force,
+        [string]$recurse
+    )
+
+    $source = "$STORE\$name"
+    $target = "$STORE\$dest"
+
+    # source directory
+    if ([System.IO.Directory]::Exists("$source")) {
+        cp "$force" "$recurse" "$source" "$target"
+    }
+    # source file
+    elseif ([System.IO.File]::Exists("$source.gpg")) {
+        cp "$force" "$recurse" "$source.gpg" "$target"
+    }
+    # source missing
+    else {
+       Write-Output "(INVALID copy): Source $source not found: Exiting."
+       exit 1
+    }
+
+}
 
 
 # Testors
 
 
-# hardcoded
+# Test-Hardcoded
 
-function Test-Hardcoded () {
+function Test-Hardcoded {
     # List secret
     List-Secret -Store $STORE -Email $EMAIL -Path ""
 
@@ -310,157 +500,265 @@ function Test-Hardcoded () {
 }
 
 
-# parametrised
+# Test-Parametrised
 
-function test-Parametrised () {
+function test-Parametrised {
+    param (
+        [string]$name
+    )
+
     # Set secret
-    Set-Secret -Store $STORE -Email $EMAIL -Path "$Name"
+    Set-Secret -Store $STORE -Email $EMAIL -Path "$name"
 
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path "$Name"
+    List-Secret -Store $STORE -Email $EMAIL -Path "$name"
 
     # Get secret
-    $Secret = Get-Secret -Store $STORE -Email $EMAIL -Path "$Name"
+    $Secret = Get-Secret -Store $STORE -Email $EMAIL -Path "$name"
 }
 
 
 
-# # Example array
-# $args = @("first", "second", "third")
-
-# # Shift operation
-# $firstArg = $args[0]  # Extract the first element
-# $args = $args[1..($args.Length - 1)]  # Keep the rest of the elements
-
-# # Output
-# Write-Output "First Argument: $firstArg"
-# Write-Output "Remaining Arguments: $args"
 
 
-
-$Name = ""
-$Command = ""
+$name = ""
+$command = ""
 $SubCommand = ""
 
 
 
-# Options
+
+
+#Test-Parametrised $name=$argv[0]
+
+
+# Arguments
+
 
 # Commands
-if ( $args.Count -gt 0) {
-    $arg = $args[0]
-    
-    # basic commmands
+if ( $args.count -eq 0) {
+    List-Secret
+    exit 0
+}
+
+if ( $args.count -gt 0) {    
+    $cmd = $args[0]
+
+    # Basic-Commands
 
     # help
-    if ( $arg -eq "help" -or $arg -eq "/?") {
-        $Command = "help"
-
-        if (! $args.Count -gt 0) {
-            exit "(INVALID): pass file ?"
-        }
-
-        $args = $args[1..($args.Length - 1)]
-
-        echo "(TODO) pass file help $args"
-        exit
-    }
-
-    # show
-    elseif ( $arg -eq "show" -or $arg -eq "get") {
-        $Command = "show"
-        $args = $args[1..($args.Length - 1)]
-
-        echo "(TODO) pass file show $args"
+    if ( $cmd -eq "help" -or $cmd -eq "usage") {
+        $command = "help"
+        Help 
         exit
     }
 
     # list
-    elseif ( $arg -eq "ls" -or $arg -eq "list") {
-        $Command = "list"
+    elseif ( $cmd -eq "ls" -or $cmd -eq "list") {
+        $command = "list"
         $args = $args[1..($args.Length - 1)]
 
-        echo "(TODO) pass file list $args"
-        exit
+        # hack for empty args
+        if ($args.count -le 0 -or $cmd -eq $args[0]) {
+            #echo "(EMPTY list): pass list $clip ($path)"
+            List-Secret
+            exit 0
+        }
+
+        $path = $args[0]
+        echo "(PARSED list 1) pass list $clip ($path)"
+
+        List-Secret -name $path
+        exit 0
+    }
+
+    # show
+    elseif ( $cmd -eq "show" -or $cmd -eq "get") {
+        $command = "show"
+        $args = $args[1..($args.Length - 1)]
+
+        # switches
+        foreach ($arg in $args) {
+            # --clip
+            if ( $arg -eq "-c" -or $arg -eq "--clip" ) {
+                $clip = "-c"
+                $args = $args[1..($args.Length - 1)]
+            }
+            # unknown option - skip it
+            elseif ( $arg.StartsWith("-") ) {                
+                $args = $args[1..($args.Length - 1)]
+            }     
+        }
+
+        # hack for empty args
+        if ($args.count -le 0 -or $cmd -eq $args[0]) {
+            echo "(EMPTY show): pass show $clip ($path)"
+            exit 1
+        }
+
+        $path = $args[0]
+        echo "(PARSED show 1) pass show $clip ($path)"
+        exit 0        
     }
 
     # insert
-    elseif ( $arg -eq "insert" -or $arg -eq "set") {
-        $Command = "insert"
+    elseif ( $cmd -eq "insert" -or $cmd -eq "set") {
+        $command = "insert"
         $args = $args[1..($args.Length - 1)]
 
-        echo "(TODO) pass file insert $args"
-        exit
+        # switches
+        foreach ($arg in $args) {
+            # --forcce
+            if ( $arg -eq "-f" -or $arg -or $arg -eq "--force") {
+                $force = "-f"
+                $args = $args[1..($args.Length - 1)]
+            }
+            # --multiline
+            elseif ( $arg -eq "-m" -or $arg -eq "--multiline") {
+                $multiline = "-m"
+                $args = $args[1..($args.Length - 1)]
+            }
+            # unknown option - skip it
+            elseif ( $arg.StartsWith("-") ) {                
+                $args = $args[1..($args.Length - 1)]
+            }     
+        }
+
+        # hack for empty args
+        if ($args.count -le 0 -or $cmd -eq $args[0]) {
+            echo "(EMPTY insert): pass insert $force $multiline ($path)"
+            exit 1
+        }
+
+        $path = $args[0]
+        echo "(PARSED insert): pass insert $force $multiline ($path)"
+        exit 0
     }
 
     # rm
-    elseif ( $arg -eq "rm" -or $arg -eq "remove") {
-        $Command = "rm"
+    elseif ( $cmd -eq "rm" -or $cmd -eq "remove") {
+        $command = "rm"
         $args = $args[1..($args.Length - 1)]
-        
-        $Path = $args[0]
-        echo "(TODO): pass file cp $args"
-        exit
+
+        # switches
+        foreach ($arg in $args) {
+            if ( $arg -eq "-f" -or $arg -eq "--force") {
+                $force = "-f"
+                $args = $args[1..($args.Length - 1)]
+            }
+            elseif ( $arg -eq "-r" -or $arg -eq "--recurse") {
+                $recurse = "-r"
+                $args = $args[1..($args.Length - 1)]
+            }     
+        }
+
+        # hack for empty args
+        if ($args.count -le 0 -or $cmd -eq $args[0]) {
+            echo "(EMPTY rm): pass rm $force $recurs ($path)"
+            exit 1
+        }
+
+        $path = $args[0]
+        echo "(PARSED rm): pass rm $force $recurse ($path)"
+        exit 0
     }
 
     # mv
-    elseif ( $arg -eq "mv" -or $arg -eq "move") {
-        $Command = "mv"
+    elseif ( $cmd -eq "mv" -or $cmd -eq "move") {
+        $command = "mv"
         $args = $args[1..($args.Length - 1)]
 
-        $Path = $args[0]
-        echo "(TODO): pass file mv $args"
-        exit
+        # switches
+        foreach ($arg in $args) {
+            if ( $arg -eq "-f" -or $arg -eq "--force") {
+                $force = "-f"
+                $args = $args[1..($args.Length - 1)]
+            }
+            elseif ( $arg -eq "-r" -or $arg -eq "--recurse") {
+                $recurse = "-r"
+                $args = $args[1..($args.Length - 1)]
+            }     
+        }
+
+        # hack for empty args
+        if ($args.count -le 1 -or $cmd -eq $args[0]) {
+            echo "(INVALID mv): pass mv $force $recurse ($path) ($dest)"
+            exit 1
+        }
+
+        $path = $args[0]
+        $dest = $args[1]        
+        echo "(PARSED mv): pass mv $force $recurse ($path) ($dest)"
+        exit 0
     }
 
     # cp
-    elseif ( $arg -eq "cp" -or $arg -eq "copy") {
-        $Command = "cp"
+    elseif ( $cmd -eq "cp" -or $cmd -eq "copy") {
+        $command = "cp"
         $args = $args[1..($args.Length - 1)]
 
-        $Path = $args[0]
-        echo "(TODO): pass file cp $args"
-        exit
+        # switches
+        foreach ($arg in $args) {
+            if ( $arg -eq "-f" -or $arg -eq "--force") {
+                $force = "-f"
+                $args = $args[1..($args.Length - 1)]
+            }
+            elseif ( $arg -eq "-r" -or $arg -eq "--recurse") {
+                $recurse = "-r"
+                $args = $args[1..($args.Length - 1)]
+            }     
+        }
+
+        # hack for empty args
+        if ($args.count -le 1 -or $cmd -eq $args[0]) {
+            echo "(INVALID cp): pass cp $force $recurse ($path) ($dest)"
+            exit 1
+        }
+
+        $path = $args[0]
+        $dest = $args[1]        
+        echo "(PARSED cp): pass cp $force $recurse ($path) ($dest)"
+        exit 0
     } 
 
     # exotic commmands
 
     # find
-    elseif ( $arg -eq "find") {
-        $Command = "find"
+    elseif ( $cmd -eq "find") {
+        $command = "find"
         $args = $args[1..($args.Length - 1)]
 
-        $Path = $args[0]
-        echo "(TODO): pass file find $args"
+        $path = $args[0]
+        echo "(TODO find): pass find ($args)"
         exit
     } 
     # grep
-    elseif ( $arg -eq "grep") {
-        $Command = "grep"
+    elseif ( $cmd -eq "grep") {
+        $command = "grep"
         $args = $args[1..($args.Length - 1)]
 
-        $Path = $args[0]
-        echo "(TODO): pass file grep $args"
+        $path = $args[0]
+        echo "(TODO grep): pass grep ($args)"
         exit
     } 
     # edit
-    elseif ( $arg -eq "edit") {
-        $Command = "edit"
+    elseif ( $cmd -eq "edit") {
+        $command = "edit"
         $args = $args[1..($args.Length - 1)]
 
-        $Path = $args[0]
-        echo "(TODO): pass file edit $args"
+        $path = $args[0]
+        echo "(TODO edit): pass edit ($args)"
         exit
     } 
 
 
     # git
-    elseif ( $arg -eq "git") {
-        $Command = "git"
+    elseif ( $cmd -eq "git") {
+        $command = "git"
         $args = $args[1..($args.Length - 1)]
 
-        $Path = $args[0]
-        echo "(TODO): pass file git $args"
+        $path = $args[0]
+        echo "(TODO git): pass git ($args)"
         exit
     } 
 
@@ -468,56 +766,36 @@ if ( $args.Count -gt 0) {
     # extension commands
 
     # file
-    elseif ( $arg -eq "file") {
-        $Command = "file"
+    elseif ( $cmd -eq "file") {
+        $command = "file"
         $args = $args[1..($args.Length - 1)]
 
-        if (! $args.Count -gt 0) {
-            exit "(INVALID): pass file ?"
+        if ($args.count -lt 2) {
+            exit "(INVALID file): pass file ? ($args)"
         }
         $Subcommand = $args[0]
         $args = $args[1..($args.Length - 1)]
 
         if ( $SubCommand -eq "get") {
-            $Name = $args[0]
-            echo "(TODO): pass file get $args"
+            $name = $args[0]
+            echo "(PARSED file get): pass file get ($args)"
             exit
         }
 
         if ( $SubCommand -eq "set") {
 
-            if (! $args.Count -gt 1) {
-                exit "(INVALID): pass file set ? ?"
+            if (! $args.count -gt 1) {
+                exit "(INVALID file set): pass file set ($args)"
             }
 
-            $File = $args[0]
-            $Name = $args[1]
-            echo "(TODO): pass file set $args"
+            $file = $args[0]
+            $name = $args[1]
+            echo "(PARSED file set): pass file set ($args)"
             exit
         }
     }
 
-    echo "(PARSED) $Coomand $SubCommand $args"
+    echo "(PARSED) $Command $SubCommand $args"
     exit
 }
 
-
-# switches
-foreach ($arg in $args) {
-  if ( $arg -eq "-f" -or $arg -eq "--force") {
-      $Force = "-f"
-      $args = $args[1..($args.Length - 1)]
-  }
-  if ( $arg -eq "-r" -or $arg -eq "--recurse") {
-      $Recurse = "-r"
-      $args = $args[1..($args.Length - 1)]
-  }
-  elseif ( $arg -eq "-m" -or $arg -eq "--multiline") {
-      $Multiline = "-m"
-      $args = $args[1..($args.Length - 1)]      
-  }
-  elseif ( $arg -eq "-c" -or $arg -eq "--clip") {
-      $Clip = "-c"
-      $args = $args[1..($args.Length - 1)]      
-  }
-}
