@@ -101,11 +101,14 @@ Many are proprietary and store their database as a single opaque vault.
 
 .
 
+Pass is different. By design it is open and transparent in its workings.
+.
+
 Pass is free, lightweight, portable, with well audited open-source code.
 
 It is but a script that calls industry-standard OSS tools: SSL, GPG, Git.
 
-The encryption uses state of the art crypto via RSA keys and a GPG keys.
+The encryption uses state of the art crypto via RSA keys and GNUPG keys.
 
 .
 
