@@ -533,6 +533,7 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
 
 
+
 ## Porting to Powershell
 
 
@@ -549,9 +550,7 @@ then have as one of its SecretManagement vaults be a wrapper to the GPG .passwor
 
 Something like:
 
-    GITBASH='C:\ProgramFiles\GitBash\' 
-    
-    gpg --decrypt %GITBASH%\.password-store\windows\ntlogin.gpg
+    gpg --decrypt $env:USERPROFILE\windows\ntlogin.gpg
 
     ***********
 
@@ -574,6 +573,56 @@ Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
 _TODO_
 
 
+## Shared Data
+
+Additional or shared external vaults can be specified using environment variables.
+
+One should use a personal vault per user, with perhaps a shared vault for operators.
+
+This can also be checked-in under Git, Management of the GPG Identity is up to you.
+
+
+    $GITBASH="C:\Program Files\Git" 
+    $PASSWORD_STORE_DIR="$GITBASH\usr\share\.password-store"
+
+    pass init
+
+
+## Command Extensions
+
+when pass is invoked without a COMMAND, its behaviour varies depending on the path.
+
+If the path maps a secret, it will 'show' it, otherwise it will 'list' the directory.
+
+If no path is specified it will assume we want to list the entire secret vault tree.
+
+. 
+
+Additional user extensions can be specified using PASSWORD_STORE_ENABLE_EXTENSIONS.
+
+Custom command extensions can be added as .password-store/.extensions/COMMAND.bash
+
+for a given COMMAND argument.  If the flag is set, and the bash command is executable,
+
+then it is sourced into the environment, passing arguments and environment variables. 
+
+Extensions in a system directory installed by the administrator are always enabled.
+
+.
+
+This could be used for example to set up Agent-Forwwarding and tunnel to a bastion.
+
+
+Something like this:
+
+
+example:
+
+    ~/.password-store/.extensions/tunnel.bash
+
+    pass tunnel <ssh_identity>  <bastion_hostname>:port  <target_hostname>:port
+
+    pass tunnel ssh/id_bastion  bastion.local    kubernetes.cluster.local
 
 
 
