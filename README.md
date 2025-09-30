@@ -102,6 +102,7 @@ Many are proprietary and store their database as a single opaque vault.
 .
 
 Pass is different. By design it is open and transparent in its workings.
+
 .
 
 Pass is free, lightweight, portable, with well audited open-source code.
