@@ -324,7 +324,7 @@ function List-Secret {
     $path = "$STORE\$name"
 
     echo "$path"
-    exit 0
+    #exit 0
 
     # root
     if ( "$name" -eq "" -or "$name" -eq "." -or "$name" -eq "/" -or "$name" -eq "\") {
@@ -522,14 +522,15 @@ function test-Parametrised {
 
 
 $name = ""
+$subcmd = ""
 $command = ""
-$SubCommand = ""
 
 
 
 
 
-#Test-Parametrised $name=$argv[0]
+#Test-Parametrised -$name $args[0]
+
 
 
 # Arguments
@@ -537,7 +538,7 @@ $SubCommand = ""
 
 # Commands
 if ( $args.count -eq 0) {
-    List-Secret
+    List-Secret -Store $STORE -Email $EMAIL
     exit 0
 }
 
@@ -560,15 +561,15 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 0 -or $cmd -eq $args[0]) {
-            #echo "(EMPTY list): pass list $clip ($path)"
-            List-Secret
+            echo "(EMPTY list): pass list $clip ($path)"
+            List-Secret -Store $STORE -Email $EMAIL
             exit 0
         }
 
         $path = $args[0]
         echo "(PARSED list 1) pass list $clip ($path)"
 
-        List-Secret -name $path
+        List-Secret -Store $STORE -Email $EMAIL -name "$path"
         exit 0
     }
 
@@ -773,16 +774,16 @@ if ( $args.count -gt 0) {
         if ($args.count -lt 2) {
             exit "(INVALID file): pass file ? ($args)"
         }
-        $Subcommand = $args[0]
+        $subcmd = $args[0]
         $args = $args[1..($args.Length - 1)]
 
-        if ( $SubCommand -eq "get") {
+        if ( $subcmd -eq "get") {
             $name = $args[0]
             echo "(PARSED file get): pass file get ($args)"
             exit
         }
 
-        if ( $SubCommand -eq "set") {
+        if ( $subcmd -eq "set") {
 
             if (! $args.count -gt 1) {
                 exit "(INVALID file set): pass file set ($args)"
@@ -795,7 +796,7 @@ if ( $args.count -gt 0) {
         }
     }
 
-    echo "(PARSED) $Command $SubCommand $args"
+    echo "(PARSED) $Command $subcmd $args"
     exit
 }
 
