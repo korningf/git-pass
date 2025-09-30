@@ -29,7 +29,7 @@
 
 # Pass is free, lightweight, portable, with well audited open-source code.
 # It is but a script that calls industry-standard OSS tools: SSL, GPG, Git.
-# The encryption uses state of the art crypto via RSA keys and a GPG keys.
+# The encryption uses state of the art crypto via RSA keys and GNUGPG keys.
 
 # The vault is just a directory tree, into which go our encrypted secrets.
 # Thus secret names can be easily located, indexed, globbed, and queried.
@@ -234,7 +234,7 @@ function Help {
     echo " Basic-Usage: "
     echo " "
     echo "   (*) "
-    echo "   pass                                        [<path] "
+    echo "   pass                                        [<name>] "
     echo "   pass [list|ls]                              [<dir>] "
     echo "   pass [show|get]   [-c|clip]                 [<path>] "
     echo " "
@@ -321,28 +321,28 @@ function List-Secret {
         [string]$Email,
         [string]$name        
     )
-    $path = "$STORE\$name"
+    $item = "$STORE\$name"
 
-    echo "$path"
+    echo "$item"
     #exit 0
 
     # root
     if ( "$name" -eq "" -or "$name" -eq "." -or "$name" -eq "/" -or "$name" -eq "\") {
-       #tree /a /f "$path" | tail +4 | sed -e 's/\.gpg$//g'
+       #tree /a /f "$item" | tail +4 | sed -e 's/\.gpg$//g'
        tree /a /f "$STORE" | tail +4
        return
     }
 
     # dir
-    if ( [System.IO.Directory]::Exists("$path")) {
+    if ( [System.IO.Directory]::Exists("$item")) {
        echo ".\$name"
-       #tree /a /f "$path" | tail +4 | sed -e 's/\.gpg$//g'
-       tree /a /f "$path" | tail +4
+       #tree /a /f "$item" | tail +4 | sed -e 's/\.gpg$//g'
+       tree /a /f "$item" | tail +4
        return
     }
 
     # file
-    if ( [System.IO.File]::Exists("$path.gpg")) {
+    if ( [System.IO.File]::Exists("$item.gpg")) {
        echo ".\$name"
        return
     }
@@ -358,14 +358,14 @@ function Set-Secret {
         [string]$force,
         [string]$multiline
     )
-    $path = "$STORE\$name"
+    $item = "$STORE\$name"
 
-    if ( [System.IO.File]::Exists("$path.gpg")) {
-       Write-Output "(INVALID insert): Secret $path.gpg already exists: Exiting."
+    if ( [System.IO.File]::Exists("$item.gpg")) {
+       Write-Output "(INVALID insert): Secret $item.gpg already exists: Exiting."
        return
     }
 
-    $input | gpg --output "$path.gpg" --encrypt --recipient "$Email"
+    $input | gpg --output "$item.gpg" --encrypt --recipient "$Email"
 }
 
 
@@ -376,16 +376,16 @@ function Get-Secret {
         [string]$Email,
         [string]$name
     )
-    $path = "$STORE\$name"
+    $item = "$STORE\$name"
 
-    if (-not [System.IO.File]::Exists("$path.gpg")) {
-       Write-Output "Secret $path.gpg not found: Exiting."
+    if (-not [System.IO.File]::Exists("$item.gpg")) {
+       Write-Output "Secret $item.gpg not found: Exiting."
        return
     }
 
-    $Secret = gpg --decrypt "$path.gpg" 2>$null
+    $Secret = gpg --decrypt "$item.gpg" 2>$null
 
-    echo $Secret
+    #echo $Secret
     
     return $Secret
 }
@@ -399,14 +399,14 @@ function Del-Secret {
         [string]$force,
         [string]$recurse
     )
-    $path = "$STORE\$name"
+    $item = "$STORE\$name"
 
-    if (! [System.IO.File]::Exists("$path.gpg")) {
-       Write-Output "(INVALID Remove): Secret $path.gpg not found: Exiting."
+    if (! [System.IO.File]::Exists("$item.gpg")) {
+       Write-Output "(INVALID Remove): Secret $item.gpg not found: Exiting."
        exit 1
     }
 
-    rm -f "$path.gpg"
+    rm -f "$item.gpg"
 }
 
 
@@ -446,7 +446,7 @@ function Copy-Secret {
         [string]$Store,
         [string]$Email,
         [string]$name,
-        [string]$dest,        
+        [string]$dest,
         [string]$force,
         [string]$recurse
     )
@@ -471,6 +471,45 @@ function Copy-Secret {
 }
 
 
+# Pass-File
+
+# Add-File
+function Add-File {
+    param (
+        [string]$Store,
+        [string]$Email,
+        [string]$file,
+        [string]$dest,
+        [string]$force,
+        [string]$recurse
+    )
+    $source = $file
+    $name = Split-Path -Path $file -Leaf`
+    $folder = "$STORE\$dest"
+    $target = "$STORE\$dest\$name"
+
+    # source
+    if (! [System.IO.File]::Exists("$source")) {
+        Write-Output "(PASS-File add): File $source does not exist: Exiting."
+        return
+    }
+
+    # folder
+    if (! [System.IO.Directory]::Exists("$folder")) {
+        Write-Output "(PASS-File add): Folder $folder does not exist: Creating it."
+        return
+    }
+
+    # target
+    if ([System.IO.File]::Exists("$target.gpg")) {
+        Write-Output "(PASS-File add): Secret $target.gpg already exists: Exiting."
+        return
+    }
+
+    cat $source | gpg --output "$target.gpg" --encrypt --recipient "$Email"
+}
+
+
 # Testors
 
 
@@ -478,25 +517,25 @@ function Copy-Secret {
 
 function Test-Hardcoded {
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path ""
+    List-Secret -Store $STORE -Email $EMAIL -name ""
 
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path "."
+    List-Secret -Store $STORE -Email $EMAIL -name "."
 
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path "ssh"
+    List-Secret -Store $STORE -Email $EMAIL -name "ssh"
 
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path "windows"
+    List-Secret -Store $STORE -Email $EMAIL -name "windows"
 
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path "windows\ntlogin"
+    List-Secret -Store $STORE -Email $EMAIL -name "windows\ntlogin"
 
     # Set secret
-    #Set-Secret -Store $STORE -Email $EMAIL -Path "windows\ntlogin" -Secret $Secret -Param "name=value"
+    #Set-Secret -Store $STORE -Email $EMAIL -name "windows\ntlogin" -Secret $Secret -Param "name=value"
 
     # Get secret
-    $Secret = Get-Secret -Store $STORE -Email $EMAIL -Path "windows\ntlogin"
+    $Secret = Get-Secret -Store $STORE -Email $EMAIL -name "windows\ntlogin"
 }
 
 
@@ -508,13 +547,13 @@ function test-Parametrised {
     )
 
     # Set secret
-    Set-Secret -Store $STORE -Email $EMAIL -Path "$name"
+    #Set-Secret -Store $STORE -Email $EMAIL -name "$name"
 
     # List secret
-    List-Secret -Store $STORE -Email $EMAIL -Path "$name"
+    List-Secret -Store $STORE -Email $EMAIL -name "$name"
 
     # Get secret
-    $Secret = Get-Secret -Store $STORE -Email $EMAIL -Path "$name"
+    $Secret = Get-Secret -Store $STORE -Email $EMAIL -name "$name"
 }
 
 
@@ -522,14 +561,15 @@ function test-Parametrised {
 
 
 $name = ""
+$cmd = ""
 $subcmd = ""
-$command = ""
+#$command = ""
+#$subcommand = ""
 
 
 
 
-
-#Test-Parametrised -$name $args[0]
+#Test-Parametrised -name $args[0]
 
 
 
@@ -551,7 +591,7 @@ if ( $args.count -gt 0) {
     if ( $cmd -eq "help" -or $cmd -eq "usage") {
         $command = "help"
         Help 
-        exit
+        exit 0
     }
 
     # list
@@ -561,13 +601,14 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 0 -or $cmd -eq $args[0]) {
-            echo "(EMPTY list): pass list $clip ($path)"
+            Write-Output "(EMPTY list): pass list $clip ($path)"
+            
             List-Secret -Store $STORE -Email $EMAIL
             exit 0
         }
 
         $path = $args[0]
-        echo "(PARSED list 1) pass list $clip ($path)"
+        Write-Output "(PARSED list 1) pass list $clip ($path)"
 
         List-Secret -Store $STORE -Email $EMAIL -name "$path"
         exit 0
@@ -593,12 +634,16 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 0 -or $cmd -eq $args[0]) {
-            echo "(EMPTY show): pass show $clip ($path)"
-            exit 1
+            Write-Output "(EMPTY show): pass show $clip ($path)"
+            
+            Get-Secret -Store $STORE -Email $EMAIL -name "$path"
+            exit 0
         }
 
         $path = $args[0]
-        echo "(PARSED show 1) pass show $clip ($path)"
+        Write-Output "(PARSED show 1) pass show $clip ($path)"
+        
+        Get-Secret -Store $STORE -Email $EMAIL -clip $clip -name "$path"
         exit 0        
     }
 
@@ -627,12 +672,13 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 0 -or $cmd -eq $args[0]) {
-            echo "(EMPTY insert): pass insert $force $multiline ($path)"
+            Write-Output "(EMPTY insert): pass insert $force $multiline ($path)"
             exit 1
         }
 
         $path = $args[0]
-        echo "(PARSED insert): pass insert $force $multiline ($path)"
+        Write-Output "(PARSED insert): pass insert $force $multiline ($path)"
+        
         exit 0
     }
 
@@ -655,12 +701,13 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 0 -or $cmd -eq $args[0]) {
-            echo "(EMPTY rm): pass rm $force $recurs ($path)"
+            Write-Output "(EMPTY rm): pass rm $force $recurse ($path)"
             exit 1
         }
 
         $path = $args[0]
-        echo "(PARSED rm): pass rm $force $recurse ($path)"
+        Write-Output "(PARSED rm): pass rm $force $recurse ($path)"
+        
         exit 0
     }
 
@@ -683,13 +730,14 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 1 -or $cmd -eq $args[0]) {
-            echo "(INVALID mv): pass mv $force $recurse ($path) ($dest)"
+            Write-Output "(INVALID mv): pass mv $force $recurse ($path) ($dest)"
             exit 1
         }
 
         $path = $args[0]
         $dest = $args[1]        
-        echo "(PARSED mv): pass mv $force $recurse ($path) ($dest)"
+        Write-Output "(PARSED mv): pass mv $force $recurse ($path) ($dest)"
+        
         exit 0
     }
 
@@ -712,13 +760,14 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -le 1 -or $cmd -eq $args[0]) {
-            echo "(INVALID cp): pass cp $force $recurse ($path) ($dest)"
+            Write-Output "(INVALID cp): pass cp $force $recurse ($path) ($dest)"
             exit 1
         }
 
         $path = $args[0]
         $dest = $args[1]        
-        echo "(PARSED cp): pass cp $force $recurse ($path) ($dest)"
+        Write-Output "(PARSED cp): pass cp $force $recurse ($path) ($dest)"
+        
         exit 0
     } 
 
@@ -730,8 +779,9 @@ if ( $args.count -gt 0) {
         $args = $args[1..($args.Length - 1)]
 
         $path = $args[0]
-        echo "(TODO find): pass find ($args)"
-        exit
+        Write-Output "(TODO find): pass find ($args)"
+        
+        exit 0
     } 
     # grep
     elseif ( $cmd -eq "grep") {
@@ -739,8 +789,9 @@ if ( $args.count -gt 0) {
         $args = $args[1..($args.Length - 1)]
 
         $path = $args[0]
-        echo "(TODO grep): pass grep ($args)"
-        exit
+        Write-Output "(TODO grep): pass grep ($args)"
+        
+        exit 0
     } 
     # edit
     elseif ( $cmd -eq "edit") {
@@ -748,8 +799,9 @@ if ( $args.count -gt 0) {
         $args = $args[1..($args.Length - 1)]
 
         $path = $args[0]
-        echo "(TODO edit): pass edit ($args)"
-        exit
+        Write-Output "(TODO edit): pass edit ($args)"
+        
+        exit 0
     } 
 
 
@@ -759,8 +811,9 @@ if ( $args.count -gt 0) {
         $args = $args[1..($args.Length - 1)]
 
         $path = $args[0]
-        echo "(TODO git): pass git ($args)"
-        exit
+        Write-Output "(TODO git): pass git ($args)"
+        
+        exit 0
     } 
 
 
@@ -771,32 +824,41 @@ if ( $args.count -gt 0) {
         $command = "file"
         $args = $args[1..($args.Length - 1)]
 
-        if ($args.count -lt 2) {
-            exit "(INVALID file): pass file ? ($args)"
+        # hack for empty args
+        if ($args.count -le 1 -or $cmd -eq $args[0]) {
+            Write-Output "(INVALID file - missing subcommand): pass file ? ($path)"
+            exit 1
         }
+
         $subcmd = $args[0]
         $args = $args[1..($args.Length - 1)]
 
-        if ( $subcmd -eq "get") {
+        if ( $subcmd -eq "g" -or $subcmd -eq "get" ) {
+            $subcommand = "get"
             $name = $args[0]
-            echo "(PARSED file get): pass file get ($args)"
-            exit
+
+            Write-Output "(PARSED file get): pass file get ? ($args)"
+            
+            exit 0
         }
 
-        if ( $subcmd -eq "set") {
+        if ( $subcmd -eq "a" -or $subcmd -eq "add") {
+            $subcommand = "add"
 
             if (! $args.count -gt 1) {
-                exit "(INVALID file set): pass file set ($args)"
+                Write-Output "(INVALID file add): pass file add ? ? ($args)"
+                exit 1
             }
 
             $file = $args[0]
             $name = $args[1]
-            echo "(PARSED file set): pass file set ($args)"
-            exit
+            Write-Output "(PARSED file set): pass file add ? ? ($args)"
+            
+            exit 0
         }
     }
 
-    echo "(PARSED) $Command $subcmd $args"
-    exit
+    Write-Output "(PARSED) $Command $subcmd $args"
+    exit 0
 }
 
