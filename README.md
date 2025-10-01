@@ -550,9 +550,12 @@ then have as one of its SecretManagement vaults be a wrapper to the GPG .passwor
 
 Something like:
 
-    gpg --decrypt $env:USERPROFILE\windows\ntlogin.gpg
+    $PASSWORD_STORE_DIR="$env:USERPROFILE\.password-store"
+
+    gpg --decrypt $PASSWORD_STORE_DIR\windows\ntlogin.gpg
 
     ***********
+
 
 
 If we map the Gitbash POSIX user home to the Windows user home,
