@@ -9,13 +9,16 @@ Git-Pass is a port of the POSIX pass command (aka password-store) for GitBash an
 It is meant for institutional thin-client windows PCs that only allow a minimal GitBash shell.
 
 
+.
 
 
+![git-pass-show-ssh-pubkey.png](git-pass-show-ssh-pubkey.png "Extract SSH pubkey")
 
-![win-git-pass-show-ssh-pubkey.png](win-git-pass-show-ssh-pubkey.png "Extract SSH pubkey")
+.
 
+![git-pass-on-powershell.png](git-pass-on-powershell.png "Ported to Powershell")
 
-
+.
 
 # Motivation
 
@@ -259,7 +262,7 @@ Pick a [Memorable Passphrase](https://strongphrase.net/)
 
 ### SSH Keypair
 
-![win-git-pass-init-gen-ssh-keys.png](win-git-pass-init-gen-ssh-keys.png "Generate SSH keys")
+![git-pass-init-gen-ssh-keys.png](git-pass-init-gen-ssh-keys.png "Generate SSH keys")
 
 
 If necessary, generate an SSH keypair:
@@ -271,7 +274,7 @@ If necessary, generate an SSH keypair:
 
 ### GPG KeyRing
 
-![win-git-pass-init-gen-gpg-keyring.png](win-git-pass-init-gen-gpg-keyring.png "Generate PGP keyring")
+![git-pass-init-gen-gpg-keyring.png](git-pass-init-gen-gpg-keyring.png "Generate PGP keyring")
 
 
 If necessary, Generate your GPG keyring:
@@ -299,7 +302,7 @@ Sample output:
 ### Password-Store Git repo
 
 
-![win-git-pass-init-pass-store.png](win-git-pass-init-pass-store.png "Generate PGP keyring")
+![git-pass-init-pass-store.png](git-pass-init-pass-store.png "Generate PGP keyring")
 
 
 If necessary, configure your Git user
@@ -331,7 +334,7 @@ Initialize the  `.password-store` Pass database.
 
 ### GPG Passphrase Entry Dialog
 
-![win-gpg-pin-passphrase-dialog.png](win-gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
+![gpg-pin-passphrase-dialog.png](gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
 
 
 The GPG passphrase is needed to armor (seal) or dearmor (unseal) any secret.
@@ -356,7 +359,7 @@ When using GPG for Windows, this will use the Windows secure PIN Entry dialog.
 
 ## Simple Secret 
 
-![win-git-pass-insert-plain-secret.png](win-git-pass-insert-plain-secret.png "Insert a plain secret (windows ntlogin)")
+![git-pass-insert-plain-secret.png](git-pass-insert-plain-secret.png "Insert a plain secret (windows ntlogin)")
 
 
 ### Store a secret (windows ntlogin)
@@ -405,7 +408,7 @@ _where (***********) is your windows ntlogon password_.
 With Pass-File (see below) we can automate various authentication and authorizations.
 
 
-![win-git-pass-insert-ssh-keys.png](win-git-pass-insert-ssh-keys.png "Insert file secrets (SSH keys)")
+![git-pass-insert-ssh-keys.png](git-pass-insert-ssh-keys.png "Insert file secrets (SSH keys)")
 
 
 ### Insert file secrets (SSH keys)
