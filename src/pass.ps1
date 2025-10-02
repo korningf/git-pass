@@ -1,3 +1,8 @@
+#!/usr/bin/env powershell
+
+'$PSCommandPath: ' + $PSCommandPath
+'$MyInvocation.MyCommand.Path: ' + $MyInvocation.MyCommand.Path
+'$MyInvocation: ' + ($MyInvocation | Out-String)
 
 #--------------------------------------------------------------------#
 #
@@ -111,7 +116,7 @@
 # 
 # (!)
 # Pass is very POSIX and uses -f --force and -r --recurse switches,
-# allowing to reorganise gpg secrets and their directrory structure;
+# allowing to reorganise gpg secrets and their directory structure;
 # -m --multiline reads a multiline secret from stdin (EOD = CTRL-D).
 #
 # ex: "
@@ -347,7 +352,7 @@ function Help {
     echo " "
     echo " (!) "
     echo " Pass is very POSIX and uses -f --force and -r --recurse switches, "
-    echo " allowing to reorganise gpg secrets and their directrory structure; "
+    echo " allowing to reorganise gpg secrets and their directory structure; "
     echo " -m --multiline reads a multiline secret from stdin (EOD = CTRL-D). "
     echo " "
     echo " ex: "
