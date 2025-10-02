@@ -539,12 +539,27 @@ function Del-Secret {
     )
     $item = "$STORE\$name"
 
-    if (! [System.IO.File]::Exists("$item.gpg")) {
-       Write-Output "(INVALID Remove): Secret $item.gpg not found: Exiting."
-       exit 1
+
+    # directory
+    if ([System.IO.Directory]::Exists("$item")) {
+        #Write-Output "Remove folder: rm $force $recurse $item"        
+        rm -Path "$item"
+        exit 0
     }
 
-    rm -f "$item.gpg"
+    # secret file
+    elseif ([System.IO.File]::Exists("$item.gpg")) {
+        #Write-Output "Remove secret: rm $force $recurse $item.gpg"        
+        rm -Path "$item.gpg"
+        exit 0
+    }
+
+    # not found
+    else {
+       Write-Output "INVALID Remove: Path $item not found: Exiting."
+       exit 1
+    }
+    
 }
 
 
@@ -563,15 +578,15 @@ function Move-Secret {
 
     # source directory
     if ([System.IO.Directory]::Exists("$source")) {
-        mv "$force" "$source" "$target"
+        mv -Path "$source" -Destination "$target"
     }
     # source file
     elseif ([System.IO.File]::Exists("$source.gpg")) {
-        mv "$force" "$source.gpg" "$target"
+        mv -Path "$source.gpg" -Destination "$target"
     }
     # source missing
     else {
-       Write-Output "(INVALID move): Source $source not found: Exiting."
+       Write-Output "INVALID move: Source $source not found: Exiting."
        exit 1
     }
 
@@ -594,15 +609,15 @@ function Copy-Secret {
 
     # source directory
     if ([System.IO.Directory]::Exists("$source")) {
-        cp "$force" "$recurse" "$source" "$target"
+        cp -Path "$source" -Destination "$target"
     }
     # source file
     elseif ([System.IO.File]::Exists("$source.gpg")) {
-        cp "$force" "$recurse" "$source.gpg" "$target"
+        cp -Path "$source.gpg" -Destination "$target"
     }
     # source missing
     else {
-       Write-Output "(INVALID copy): Source $source not found: Exiting."
+       Write-Output "INVALID copy: Source $source not found: Exiting."
        exit 1
     }
 
@@ -650,26 +665,55 @@ function Add-File {
 
 # Pass-Sign
 
-# 
+# Pass-Info
+function Pass-Info {
+    param (
+        [string]$Store,
+        [string]$Email,
+        [string]$file,
+        [string]$name
+    )
+    
+    if (! [System.IO.File]::Exists("$file")) {
+       Write-Output "(INVALID sign): File $file does not exists: Exiting."
+       return
+    }
+
+
+    #$mime = [System.Web.MimeMapping]::GetMimeMapping($file)      
+    $filetype = file "$file" | sed -e 's/^.*: //g'
+    $mimetype = file "$file ---mime-type" | sed -e 's/^.*: //g'
+    $encoding = file "$file ---mime-encoding" | sed -e 's/^.*: //g'
+
+    $bytelen = wc -c "$file"
+    $charlen = wc -m "$file"
+    $linelen = wc -l "$file"
+}
+
+
+# Pass-Sign
 function Pass-Sign {
     param (
         [string]$Store,
         [string]$Email,
+        [string]$file,        
         [string]$name,
-        [string]$force,
-        [string]$type,
-        [string]$mime        
+        [string]$filetype,
+        [string]$mimetype,
+        [string]$encoding
     )
     $item = "$STORE\$name"
 
     if (! [System.IO.File]::Exists("$item.gpg")) {
-       Write-Output "(INVALID insert): Secret $item.gpg does not exists: Exiting."
+       Write-Output "(INVALID sign): Secret $item.gpg does not exists: Exiting."
        return
     }
 
-    cat "$file.gpg" | gpg --detach-sign --output "$item.asc" --armor --recipient "$Email" --comment "type=pass mime=text/plain"
+    cat "$file.gpg" | gpg --detach-sign --output "$item.asc" --armor --recipient "$Email" --comment "filetype=$filetype"  --comment "mimetype=$mimetype"  --comment "encoding=$encoding"
 
 }
+
+
 
 # Testors
 
