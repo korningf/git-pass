@@ -489,7 +489,7 @@ So an equivalent powershell script could replicate pass.
 
 Pass provides encryption of Data at Rest: it will safely store all your private keys.
 
-These keys in turn are used to establish secure seesion and encrypt Data in Transit.
+These keys in turn are used to establish secure session and encrypt Data in Transit.
 
 .
 
@@ -546,7 +546,7 @@ The beauty of pass is we can run it anywhere: on windows, on linux, on serverles
 
 The best would be to write a powershell program, pass.ps1, to use the native Secret Management,
 
-then have as one of its SecretManagement vaults be a wrapper to the GPG .password-store vault. 
+then have, as one of its SecretManagement vaults, a wrapper to the GPG .password-store vault. 
 
 
 .
