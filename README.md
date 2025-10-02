@@ -682,7 +682,7 @@ depending on the workflow.
     SOPS 
     Hashicorp Vault 
     Azure AKV, AWS KMS, GCPO KMS
-    Dokcer, Swarm, Kubernetes, Helm    
+    Docker, Swarm, Kubernetes, Helm    
 
 
 
