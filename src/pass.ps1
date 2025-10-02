@@ -746,9 +746,9 @@ $subcmd = ""
 
 # what a nightmare
 #
-# The egenral principle of POSIX command sis that the path object being manipulated
+# The general principle of POSIX commands is that the path object being manipulated
 # usually comes last in a command invocation, allowing us to use the shift operator
-# to parse teh command, subcommands, and all the the other options and switches.
+# to parse the command, subcommands, and all the the other options and switches.
 #
 # Unfortunately PowerShell has no shift operator, so we do it by slicing the array.
 #
