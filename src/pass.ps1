@@ -1,8 +1,7 @@
-#!/usr/bin/env powershell
+#  
 
-'$PSCommandPath: ' + $PSCommandPath
-'$MyInvocation.MyCommand.Path: ' + $MyInvocation.MyCommand.Path
-'$MyInvocation: ' + ($MyInvocation | Out-String)
+# not sure this is needed
+#!/usr/bin/env powershell
 
 #--------------------------------------------------------------------#
 #
