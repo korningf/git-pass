@@ -745,18 +745,26 @@ $subcmd = ""
 # Arguments
 
 # what a nightmare
-# Unfortunately PowerShell has no shift operator, so we do it by slicing the array.
-# However, when it comes to slicing, all the copilot documentation is incorrect.
 #
-# So online copilot help says this is enough:
-#        $args = $args[1..($args.Length -1)]
+# The egenral principle of POSIX command sis that the path object being manipulated
+# usually comes last in a command invocation, allowing us to use the shift operator
+# to parse teh command, subcommands, and all the the other options and switches.
+#
+# Unfortunately PowerShell has no shift operator, so we do it by slicing the array.
 #
 # But slicing has a feature(bug?): it does not remove the very last argument.
-# That is, slicing [1..0] is meaningles to it, and so it does not slice at all.
+# As slicing [1..0] is meaningless, the result is it does not slice at all.
+# This means in those cases, the last remaining arg stays on the arg stack.
 #
-# So the workaround is to clear the arg first.
-#        $args[0] = ""
-#        $args = $args[1..($args.Length -1)]
+# the flow that works we clear the arg being popped 
+# and check for the last arg being the last command:
+#
+#    $args[0] = ""
+#    $args = $args[1..($args.Length -1)]
+#    ...
+#    # Fail if empty
+#    if ($args.count -lt 1 -or $args[0] -eq "$cmd") {
+#    ... 
 #
 
 # Commands
@@ -864,7 +872,7 @@ if ( $args.count -gt 0) {
 
         # switches
         foreach ($arg in $args) {
-            # --forcce
+            # --force
             if ( $arg -eq "-f" -or $arg -or $arg -eq "--force") {
                 $force = "-f"
                 $args[0] = ""
@@ -885,13 +893,14 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -lt 1 -or $args[0] -eq "") {
-            Write-Output "(EMPTY insert): pass insert $force $multiline ($path)"
+            Write-Output "EMPTY insert: pass insert $force $multiline $path ($($args.Count) args = [$args])"
             exit 1
         }
 
         $path = $args[0]
-        Write-Output "(PARSED insert): pass insert $force $multiline ($path)"
+        Write-Output "PARSED insert: pass insert $force $multiline $path ($($args.Count) args = [$args])"
         
+        Set-Secret -Store $STORE -Email $EMAIL $force $multiline -name "$path"
         exit 0
     }
 
@@ -917,13 +926,14 @@ if ( $args.count -gt 0) {
 
         # hack for empty args
         if ($args.count -lt 1 -or $args[0] -eq "") {
-            Write-Output "(EMPTY rm): pass rm $force $recurse ($path)"
+            Write-Output "EMPTY rm: pass rm $force $recurse $path ($($args.Count) args = [$args])"
             exit 1
         }
 
         $path = $args[0]
-        Write-Output "(PARSED rm): pass rm $force $recurse ($path)"
+        Write-Output "PARSED rm: pass rm $force $recurse $path ($($args.Count) args = [$args])"
         
+        Del-Secret -Store $STORE -Email $EMAIL $force $recurse -name "$path"
         exit 0
     }
 
@@ -948,15 +958,16 @@ if ( $args.count -gt 0) {
         }
 
         # hack for empty args
-        if ($args.count -le 1 -or $args[0] -eq "") {
-            Write-Output "(INVALID mv): pass mv $force $recurse ($path) ($dest)"
+        if ($args.count -lt 2 -or $args[0] -eq "") {
+            Write-Output "INVALID mv: pass mv $force $recurse $path $dest ($($args.Count) args = [$args])"
             exit 1
         }
 
         $path = $args[0]
         $dest = $args[1]        
-        Write-Output "(PARSED mv): pass mv $force $recurse ($path) ($dest)"
-        
+        Write-Output "PARSED mv: pass mv $force $recurse $path $dest ($($args.Count) args = [$args])"
+
+        Move-Secret -Store $STORE -Email $EMAIL $force $recurse -name "$path" -dest "$dest"
         exit 0
     }
 
@@ -981,50 +992,54 @@ if ( $args.count -gt 0) {
         }
 
         # hack for empty args
-        if ($args.count -le 1 -or $args[0] -eq "") {
-            Write-Output "(INVALID cp): pass cp $force $recurse ($path) ($dest)"
+        if ($args.count -lt 2 -or $args[0] -eq "") {
+            Write-Output "INVALID cp: pass cp $force $recurse $path $dest ($($args.Count) args = [$args])"
             exit 1
         }
 
         $path = $args[0]
         $dest = $args[1]        
-        Write-Output "(PARSED cp): pass cp $force $recurse ($path) ($dest)"
+        Write-Output "PARSED cp: pass cp $force $recurse $path $dest ($($args.Count) args = [$args])"
         
+        Copy-Secret -Store $STORE -Email $EMAIL $force $recurse -name "$path" -dest "$dest"
         exit 0
     } 
 
     # exotic commmands
 
-    # find
+    # find (TODO)
     elseif ( $cmd -eq "find") {
         $command = "find"
         $args[0] = ""
         $args = $args[1..($args.Length -1)]
 
         $path = $args[0]
-        Write-Output "(TODO find): pass find ($args)"
+        Write-Output "UNSUPPORTED find (TODO): pass find $path $expr ($($args.Count) args = [$args])"
         
         exit 0
     } 
-    # grep
+
+    # grep (TODO)
     elseif ( $cmd -eq "grep") {
         $command = "grep"
         $args[0] = ""
         $args = $args[1..($args.Length -1)]
 
         $path = $args[0]
-        Write-Output "(TODO grep): pass grep ($args)"
+        $expr = ""
+        Write-Output "UNSUPPORTED grep (TODO): pass grep $path $expr ($($args.Count) args = [$args])"
         
         exit 0
     } 
-    # edit
+
+    # edit (TODO)
     elseif ( $cmd -eq "edit") {
         $command = "edit"
         $args[0] = ""
         $args = $args[1..($args.Length -1)]
 
         $path = $args[0]
-        Write-Output "(TODO edit): pass edit ($args)"
+        Write-Output "UNSUPPORTED edit (TODO): pass edit $path ($($args.Count) args = [$args])"
         
         exit 0
     } 
@@ -1037,7 +1052,9 @@ if ( $args.count -gt 0) {
         $args = $args[1..($args.Length -1)]
 
         $path = $args[0]
-        Write-Output "(TODO git): pass git ($args)"
+        $subcmd = ""
+        $options = ""
+        Write-Output "UNSUPPORTED git (TODO): pass git $subcmd $options $path ($($args.Count) args = [$args])"        
         
         exit 0
     } 
