@@ -703,13 +703,14 @@ All that is required is an extension to automate deriving and using GPG sub-keys
 
 _TODO_
 
-Manage multiple subkeys
+Manage multiple subkeys:
 
-Something like:
-
+    JohnDoe+dmz@email.com
     JohnDoe+aws@email.com    
     JohnDoe+azure@email.com
 
+
+_TODO_
 
 
 ### Password Generation / Rotation
@@ -734,14 +735,10 @@ _TODO_
 
 
 
-_TODO_
-
-
 
 
 
 ## Agent Forwarding
-
 
 
 We want to configure a local SSH-Agent or a GPG Agent and have it forward connections.
@@ -761,27 +758,25 @@ _TODO_
 
 
 
+
 ## Agent Tunneling
 
 
 Once an Agent is configured, we could writer an extension to open secure proxy tunnels.
 
+* Pass-tunnel Extension
+
 Something like this:
-
-
-example:
 
     ~/.password-store/.extensions/tunnel.bash
 
     pass tunnel <ssh_identity>  <bastion_hostname>:port  <target_hostname>:port
 
-    pass tunnel ssh/id_bastion  bastion.local    kubernetes.cluster.local
+    pass tunnel ssh/id_bastion  bastion.dmz    kubernetes.cluster.local
 
 
 _TODO_
 
-
-* Pass-tunnel Extension
 
 
 
@@ -811,8 +806,9 @@ Something like:
     ~/.secret-store        
         .gpg-id/                        -> primary id: JohnDoe@Email
         dmz/
-            id_rsa_dmz_bastion_aws.gpg
-            id_rsa_dmz_bastion_azure.gpg            
+            id_bastion.gpg
+            id_bastion_aws.gpg
+            id_bastion_azure.gpg            
         aws/
             .gpg-id/                    -> id: JohnDoe+aws@Email.com
             root/
@@ -841,7 +837,7 @@ _set up agent-tunelling: at minimum tunnel to a bastion host_
 
 Something like:
 
-    pass tunnel --id JohnDoe-subkey1@email.com
+    pass tunnel --id dmz/id_bastion  bastion.dmz  ubuntu@kubernetes.cluster.local
 
 
 
@@ -856,8 +852,41 @@ depending on the workflow.
 
     SOPS 
     Hashicorp Vault 
-    Azure AKV, AWS KMS, GCPO KMS
+    Azure AKV, AWS ASM/KMS, GCP KMS
     Docker, Swarm, Kubernetes, Helm    
+
+
+
+## Certificates
+
+
+Note SSH keys and other private keys are often signed X.509 certificates.
+
+As we are using GnuPGP All the low-level SSL/TLS tools are already present.
+
+Managing TLS certs is a pain in the arse.  Not sure what can be done here.
+
+.
+
+It would be nice to automate the generation of CSRs and derived cert chains,
+
+But that may be out of scope for a light, portable, simple, universal vault.
+
+What is sure is that letsencrypt, certbot, and such are not fully portable.
+
+Right now these rely on python, go, and possibly embedded docker webapps.
+
+.
+
+For assume the simplest flow: we can store cert private keys in the vault.
+
+Also store server SSH keys, and use pass to tunnel to a secure Cert server.
+
+That server has the chosen SSL toolkit, and synchs the vault certificates.
+
+Do the manual steps on that server providing the certificate private keys.
+
+_TODO investigate what can be done here_
 
 
 
