@@ -538,6 +538,33 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
 
 
+
+## Command Extensions
+
+when pass is invoked without a COMMAND, its behaviour varies depending on the path.
+
+If the path maps a secret, it will 'show' it, otherwise it will 'list' the directory.
+
+If no path is specified it will assume we want to list the entire secret vault tree.
+
+. 
+
+Additional user extensions can be specified using PASSWORD_STORE_ENABLE_EXTENSIONS.
+
+Custom command extensions can be added as .password-store/.extensions/COMMAND.bash
+
+for a given COMMAND argument.  If the flag is set, and the bash command is executable,
+
+then it is sourced into the environment, passing arguments and environment variables. 
+
+Extensions in a system directory installed by the administrator are always enabled.
+
+
+
+# Improvements
+
+
+
 ## Porting to Powershell
 
 
@@ -580,7 +607,16 @@ Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
 _TODO_
 
 
-## Shared Data
+## Shared Secrets
+
+
+By default pass assumes a single user-vault stored in the user's ~/.password-store.
+
+Pass by design is flexible and makes no imposition on the vault directory structure,
+
+the git repo sharing, or even on the management of GPG identities that can read it.
+
+.
 
 Additional or shared external vaults can be specified using environment variables.
 
@@ -595,30 +631,140 @@ This can also be checked-in under Git, Management of the GPG Identity is up to y
     pass init
 
 
-## Command Extensions
 
-when pass is invoked without a COMMAND, its behaviour varies depending on the path.
+We want to facilitate generic workflows, ie to standardise on at leats 2 vaults.
 
-If the path maps a secret, it will 'show' it, otherwise it will 'list' the directory.
+We want to be able to user pass for personal everyday app and browser passwords.
 
-If no path is specified it will assume we want to list the entire secret vault tree.
-
-. 
-
-Additional user extensions can be specified using PASSWORD_STORE_ENABLE_EXTENSIONS.
-
-Custom command extensions can be added as .password-store/.extensions/COMMAND.bash
-
-for a given COMMAND argument.  If the flag is set, and the bash command is executable,
-
-then it is sourced into the environment, passing arguments and environment variables. 
-
-Extensions in a system directory installed by the administrator are always enabled.
+We also want to be able to use shared secrets that ideally sync from the same repo.
 
 .
 
-This could be used for example to set up Agent-Forwwarding and tunnel to a bastion.
+It probably makes sense to have the users's personal ~/.password-store be stored as
 
+in the private git-repo home for each user, ie have a user personal password-store.
+
+.
+
+As Corporate desktop users are tied to AD Orgs, Groups, and Roles we could assume
+
+such users might also use a default shared secret-store, shared with group members.
+
+.
+
+
+Let use standardise this to a second share-secret vault, stored in ~/.secret-store.
+
+
+    $PASSWORD_STORE_DIR="$env:USERPROFILE\.secret-store"
+
+    pass init
+
+
+_TODO_
+
+
+
+
+## GPG Sub-Keys
+
+
+Though not in the RFC Email specs, Most Providers allow multiple mailbox aliases
+
+by using the `+` separator. For example, the following all use the same mailbox:
+
+    JohnDoe@email.com
+    JohnDoe+Personal@email.com
+    JohnDoe+Business@email.com
+    JohnDoe+Family@email.com
+    JohnDoe+Friends@email.com
+
+
+NOW GPG and RSA is pretty secure, but the default mode could be hardened even more.
+
+Now sharing keys in git (even passphrase-protected) might open statistical analysis.
+
+Thus it is recommended that vaults shared on Git be on private or corporate Git repos.
+
+.
+
+But we may want to use different encryption keys for different folders or secrets.
+
+Thankfully, Pass has thought this through, as GPG supports multiple derived subkeys.
+
+.
+
+The Password-Store structure already allows for separate .gpg-id keys per folder.
+
+The rudiments are there, but right now management of those keys is done by hand.
+
+All that is required is an extension to automate deriving and using GPG sub-keys.
+
+
+_TODO_
+
+Manage multiple subkeys
+
+Something like:
+
+    JohnDoe+aws@email.com    
+    JohnDoe+azure@email.com
+
+
+
+### Password Generation / Rotation
+
+
+So that is for the encryption key used to encrypt individual secrets in a folder.
+
+In addition, Pass already supports password generation for the actual secrets.
+
+Right now that random password generation uses configurable character classes.
+
+.
+
+Note NIST now recommends Memorable Passphrases instead of Character Classes.
+
+
+_TODO_
+
+    - see what can be done here ? - are random chars good enough?
+    - note we want to keep pass light and portable
+    - we do not want to use dictionaries or hit APIs
+
+
+
+_TODO_
+
+
+
+
+
+## Agent Forwarding
+
+
+
+We want to configure a local SSH-Agent or a GPG Agent and have it forward connections.
+
+Forwarding Agents allow a one-time SSO authentication and authorisation via fowarding.
+
+You authenticate once, it caches credentials, and passes them on to chained connections.
+
+This could be used for example to set up Agent-Forwwarding and Tunnellin to a bastion.
+
+
+_TODO_
+
+* Add SSH-Agent ?
+  
+* Add GPG-Agent
+
+
+
+## Agent Tunneling
+
+
+Once an Agent is configured, we could writer an extension to open secure proxy tunnels.
 
 Something like this:
 
@@ -632,18 +778,12 @@ example:
     pass tunnel ssh/id_bastion  bastion.local    kubernetes.cluster.local
 
 
-
-## Agent Forwarding
-
 _TODO_
 
-* Add SSH-Agent
-  
-* Add GPG-Agent
+
+* Pass-tunnel Extension
 
 
-
-## Agent Tunneling
 
 
 ### DMZ Bastion
@@ -664,12 +804,46 @@ _TODO_
 
 _The next step is to figure out an organisational structure_
 
+Organize folders and subkeys:
+
+Something like:
+
+    ~/.secret-store        
+        .gpg-id/                        -> primary id: JohnDoe@Email
+        dmz/
+            id_rsa_dmz_bastion_aws.gpg
+            id_rsa_dmz_bastion_azure.gpg            
+        aws/
+            .gpg-id/                    -> id: JohnDoe+aws@Email.com
+            root/
+                aws_root_access_key.gpg
+            vpc1/
+                aws_vpc1_access_key.gpg
+        azure/
+            .gpg-id/                    -> id: JohnDoe+azure@Email.com
+            root/
+                azure_root_access_key.gpg
+            vnet1/
+                azure_vnet1_access_key.gpg
+
+
+
 _set up agent-forwarding: pick either ssh-agent or gpg-agent_
+
 
 * evaluate  [win-gpg-agent](https://github.com/rupor-github/win-gpg-agent)
 
 * evaluate  [choco win-gpg-agent](https://community.chocolatey.org/packages/win-gpg-agent)
   
+
+_set up agent-tunelling: at minimum tunnel to a bastion host_
+
+
+Something like:
+
+    pass tunnel --id JohnDoe-subkey1@email.com
+
+
 
 ## Advanced Workflows
 
