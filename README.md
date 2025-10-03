@@ -178,7 +178,7 @@ to isolate the Initial Trust authentication from subsequent authorisations.
 
 On the thin desktop client, we use git-pass to secure the Initial Trust,
 
-to establish Identity Secrets, things like OTP logins, SSH keys, PGP keys.
+to establish Identity Secrets, things like local logins, SSH keys, PGP keys.
 
 That's where git-pass comes in, to establish a secure connection or session.
 
@@ -336,10 +336,11 @@ Initialize the  `.password-store` Pass database.
 
 ![gpg-pin-passphrase-dialog.png](gpg-pin-passphrase-dialog.png "On windows the PIN dialog is used to enter the master passphrase")
 
+.
 
-The GPG passphrase is needed to armor (seal) or dearmor (unseal) any secret.
+The GPG passphrase is needed to generate the database and decrypt any secret.
 
-GPG will prompt for a passphrase on first use and and will try to remember it.
+GPG will prompt for a passphrase on first use and and will cache remember it.
 
 .
 
@@ -347,7 +348,7 @@ The mechanism may be 100% command-line, or it may involve a Windows GUI dialog.
 
 The workflow varies: when using an MSys or MinGW GPG this may be command-line.
 
-When using GPG for Windows, this will use the Windows secure PIN Entry dialog.
+When using GPG for Windows, this will use the Windows Secure PIN Entry dialog.
 
 
 
