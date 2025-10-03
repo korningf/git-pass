@@ -241,11 +241,28 @@ Example:
     email: JohnDoe@email.com
    
 
+
+# Configuration
+
+If you already have a GPG id the following may be useful:
+
+_TODO_
+
+    gpg_id=`gpg --list-secret-keys | head -5 | grep uid | xargs | cut -d ' ' -f 5 | tr '<>' '  ' | tee` 2>/dev/null
+    gpg_hash=`gpg --list-secret-keys | head -5 | grep 'sec ' | xargs | cut -d ' ' -f 2`
+
+_TODO_
+
+
+
+
 #  Installation
 
 
 In an admin gitbash shell, clone this repo and run the install script.
-    
+
+If you have no yet set up Git, you can use HTTPS or download the zip/tgz.
+
     ./install.sh
 
 
@@ -508,7 +525,20 @@ The text file can append name=value parameter pairs, but the first line is the s
 
 
 
+
+## Fuzzy Default Command
+
+when pass is invoked without a COMMAND, its behaviour varies depending on the path.
+
+If the path maps a secret, it will 'show' it, otherwise it will 'list' the directory.
+
+If no path is specified it will assume we want to list the entire secret vault tree.
+
+
+
 # Extensions
+
+
 
 Now the simple design allows for additional extensions, usually as plain bash scripts.
 
@@ -517,6 +547,19 @@ Though this doesn't have to be the case, any callable command can do (python, go
 Extensions will depend on the Workflow (see Workflow above), and our common IAC toolkit.
 
 For now, the only extension we require (which is bundled-in) is pass-file (file secrets).
+
+
+. 
+
+Additional user extensions can be specified using PASSWORD_STORE_ENABLE_EXTENSIONS.
+
+Custom command extensions can be added as .password-store/.extensions/COMMAND.bash
+
+for a given COMMAND argument.  If the flag is set, and the bash command is executable,
+
+then it is sourced into the environment, passing arguments and environment variables. 
+
+Extensions in a system directory installed by the administrator are always enabled.
 
 
 
@@ -535,29 +578,6 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
     pass file help
 
-
-
-
-
-## Command Extensions
-
-when pass is invoked without a COMMAND, its behaviour varies depending on the path.
-
-If the path maps a secret, it will 'show' it, otherwise it will 'list' the directory.
-
-If no path is specified it will assume we want to list the entire secret vault tree.
-
-. 
-
-Additional user extensions can be specified using PASSWORD_STORE_ENABLE_EXTENSIONS.
-
-Custom command extensions can be added as .password-store/.extensions/COMMAND.bash
-
-for a given COMMAND argument.  If the flag is set, and the bash command is executable,
-
-then it is sourced into the environment, passing arguments and environment variables. 
-
-Extensions in a system directory installed by the administrator are always enabled.
 
 
 
@@ -593,15 +613,7 @@ If we map the Gitbash POSIX user home to the Windows user home,
 
 Then we can have everything work together in perfect harmony.
 
-.
 
-For extra marks, we add a plugin to sync it to Hashicorp Vault.
-
-We can even add a plugin to sync Powershell Secret Management.
-
-We would then have a consistent secure workflow across the board.
-
-Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
 
 
 _TODO_
@@ -666,77 +678,6 @@ _TODO_
 
 
 
-## GPG Sub-Keys
-
-
-Though not in the RFC Email specs, Most Providers allow multiple mailbox aliases
-
-by using the `+` separator. For example, the following all use the same mailbox:
-
-    JohnDoe@email.com
-    JohnDoe+Personal@email.com
-    JohnDoe+Business@email.com
-    JohnDoe+Family@email.com
-    JohnDoe+Friends@email.com
-
-
-NOW GPG and RSA is pretty secure, but the default mode could be hardened even more.
-
-Now sharing keys in git (even passphrase-protected) might open statistical analysis.
-
-Thus it is recommended that vaults shared on Git be on private or corporate Git repos.
-
-.
-
-But we may want to use different encryption keys for different folders or secrets.
-
-Thankfully, Pass has thought this through, as GPG supports multiple derived subkeys.
-
-.
-
-The Password-Store structure already allows for separate .gpg-id keys per folder.
-
-The rudiments are there, but right now management of those keys is done by hand.
-
-All that is required is an extension to automate deriving and using GPG sub-keys.
-
-
-_TODO_
-
-Manage multiple subkeys:
-
-    JohnDoe+dmz@email.com
-    JohnDoe+aws@email.com    
-    JohnDoe+azure@email.com
-
-
-_TODO_
-
-
-### Password Generation / Rotation
-
-
-So that is for the encryption key used to encrypt individual secrets in a folder.
-
-In addition, Pass already supports password generation for the actual secrets.
-
-Right now that random password generation uses configurable character classes.
-
-.
-
-Note NIST now recommends Memorable Passphrases instead of Character Classes.
-
-
-_TODO_
-
-    - see what can be done here ? - are random chars good enough?
-    - note we want to keep pass light and portable
-    - we do not want to use dictionaries or hit APIs
-
-
-
-
-
 
 ## Agent Forwarding
 
@@ -755,7 +696,6 @@ _TODO_
 * Add SSH-Agent ?
   
 * Add GPG-Agent
-
 
 
 
@@ -841,6 +781,18 @@ Something like:
 
 
 
+
+# Improvements
+
+
+The following section describes improvements that may go in a different project.
+
+To stick to the original code and the POSIX do-only-one-thing-well philosophy,
+
+I might implement these ideas into a separate project.
+
+
+
 ## Advanced Workflows
 
 
@@ -857,8 +809,124 @@ depending on the workflow.
 
 
 
-## Certificates
+## GPG Sub-Keys
 
+
+Though not in the RFC Email specs, Most Providers allow multiple mailbox aliases
+
+by using the `+` separator. For example, the following all use the same mailbox:
+
+    JohnDoe@email.com
+    JohnDoe+Personal@email.com
+    JohnDoe+Business@email.com
+    JohnDoe+Family@email.com
+    JohnDoe+Friends@email.com
+
+
+NOW GPG and RSA is pretty secure, but the default mode could be hardened even more.
+
+Now sharing keys in git (even passphrase-protected) might open statistical analysis.
+
+Thus it is recommended that vaults shared on Git be on private or corporate Git repos.
+
+.
+
+But we may want to use different encryption keys for different folders or secrets.
+
+Thankfully, Pass has thought this through, as GPG supports multiple derived subkeys.
+
+.
+
+The Password-Store structure already allows for separate .gpg-id keys per folder.
+
+The rudiments are there, but right now management of those keys is done by hand.
+
+All that is required is an extension to automate deriving and using GPG sub-keys.
+
+
+_TODO_
+
+Manage multiple subkeys:
+
+    JohnDoe+dmz@email.com
+    JohnDoe+aws@email.com    
+    JohnDoe+azure@email.com
+
+
+_TODO_
+
+
+## Pass ACLs
+
+
+Now the ultimate in security is revocable shared keys or event transient keys.
+
+What we want is a system where the allowed GPG ids, or subkeys can be revoked.
+
+.
+
+Now as we allow keys and secrets to be shared via Git this is particularly hard.
+
+We have to assume a revoked user already has a stale copy of the vault and keys.
+
+.
+
+The solution here is code our own PKI ACL, with encryption keys being derived 
+
+from the current and latest audience. If the audience changes, the keys change. 
+
+There has to be a dynamic component that revokes old keys and is tamper-proof.
+
+.
+
+This will require a PKI KDF (Key derivation Function) and some cryptography.
+
+Consider a symmetric shared secret derived from a hash of the GPG ID list,
+
+ideally non-replayable, with a salt, and nonce, and tied to the lastest git.
+
+.
+
+Let us say we to publish a URL, where there will be a hash of the ACL set,
+
+ie of the audience ids, and have stored in Git.  The hash has to be salted
+
+and cannot be replayed, so perhaps an HMAC function, derived on past hashes.
+
+.
+
+In addition, this will provide a means to rotate the shared keys on demand.
+
+This may be useful for regulatory compliance or for corporate security policy.
+
+.
+
+_TODO_
+
+investigate 
+
+
+## Pass Generation / Rotation
+
+
+Pass already supports random password generation for the individual secrets.
+
+Right now that random password generation uses configurable character classes.
+
+.
+
+Note NIST now recommends Memorable Passphrases instead of Character Classes.
+
+
+_TODO_
+
+    - see what can be done here ? - are random chars good enough?
+    - note we want to keep pass light and portable
+    - we do not want to use dictionaries or hit APIs
+
+
+
+## Pass-Cert
 
 Note SSH keys and other private keys are often signed X.509 certificates.
 
@@ -888,16 +956,46 @@ Do the manual steps on that server providing the certificate private keys.
 
 _TODO investigate what can be done here_
 
+.
+
+The likely candidate is OpenVPN EasyRSA, a 99% pure POSIX Bash shell tool.
+
+The 1% that is not bash is platform native code, .BAT or PS1 on Windows.
 
 
+## Pass-SSO
 
-# Integration
+Also in the realm of possibility is for OIDC 2 /OAuth 2 SSO JWT Tokens.
+
+It would be awesome to be able to manage ID and Acces tokens in a vault.
+
+We could also manage MIT Kerberos tickets and other SSO implementations.
+
+This requires some investigation and is straying quite a bit from Pass.
 
 _TODO_
 
+investigate on a rainy winter's night
+
+
+
+
+# Integrations
+
+For extra marks, we add a plugin to sync it to Hashicorp Vault.
+
+We can even add a plugin to sync Powershell Secret Management.
+
+We would then have a consistent secure workflow across the board.
+
+Finally, for bonus marks, we integrate PIM Just-in-Time privilege.
+
+
+_TODO_
 
 _Finally we should develop integration plugins_
 
+* integrate with PowerShell Secrets Management ?
 
 * integrate with SOPS Secrets-Operations
 
@@ -907,21 +1005,6 @@ _Finally we should develop integration plugins_
 
 * integrate with Just-in-Time PIM Privilege Elevation ?
 
-* integrate with PowerShell Secrets Management ?
-
-
-
-
-
-
-# Automation
-
-_TODO_
-
-    gpg_id=`gpg --list-secret-keys | head -5 | grep uid | xargs | cut -d ' ' -f 5 | tr '<>' '  ' | tee` 2>/dev/null
-    gpg_hash=`gpg --list-secret-keys | head -5 | grep 'sec ' | xargs | cut -d ' ' -f 2`
-
-_TODO_
 
 
 
