@@ -590,32 +590,34 @@ The powershell environment assumes a minimal GitBash POSIX with SSL, SSH, GPG, G
 
 .
 
-For now tt works in its rudiments, we can add, list and show secrets or entire secret files.
+For now it works in its rudiments, we can add, list and show secrets or entire secret files.
 
 We will complete most of the original pass functionality, bar maybe edit and QR encode stuff.
 
-We may add enhacements to both, but that would mean a amjor fork of trhge original  `pass`.
+We may add enhacements to both, but that would mean a major fork of trhe original  `pass`.
 
 We are debating whether such enhancements should go in a separate project.
 
 
 .
 
-Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
+For added portability, we can also implement the PowerShel.SecretManagement ISecureVault API
 
-This means we can expose pass as a SecretVault provider, and then  use it for Windows Apps.
+and integrate with the windows application ecosystem.
+
+
+_TODO_
+
+
+And we can then also easily with other popular secret managers, like HahshiCorp Vault.
 
 
 _TODO_
 
-
-And we can trhen also easily with other popular secret managers, like HahshiCorp Vault.
-
-
-_TODO_
 
 
 # Enhancements
+
 
 
 The beauty of pass is almost all the intelligence is in GPG and the dir structure.
@@ -626,72 +628,7 @@ Pass leverages it with an opiniated yet flexible dir structure for key managemen
 
 
 
-If we map the Gitbash POSIX user home to the Windows user home,
-
-Then we can have everything work together in perfect harmony.
-
-
-
-
 _TODO_
-
-
-## Shared Secrets
-
-
-By default pass assumes a single user-vault stored in the user's ~/.password-store.
-
-Pass by design is flexible and makes no imposition on the vault directory structure,
-
-the git repo sharing, or even on the management of GPG identities that can read it.
-
-.
-
-Additional or shared external vaults can be specified using environment variables.
-
-One should use a personal vault per user, with perhaps a shared vault for operators.
-
-This can also be checked-in under Git, Management of the GPG Identity is up to you.
-
-
-    $GITBASH="C:\Program Files\Git" 
-    $PASSWORD_STORE_DIR="$GITBASH\usr\share\.password-store"
-
-    pass init
-
-
-
-We want to facilitate generic workflows, ie to standardise on at leats 2 vaults.
-
-We want to be able to user pass for personal everyday app and browser passwords.
-
-We also want to be able to use shared secrets that ideally sync from the same repo.
-
-.
-
-It probably makes sense to have the users's personal ~/.password-store be stored as
-
-in the private git-repo home for each user, ie have a user personal password-store.
-
-.
-
-As Corporate desktop users are tied to AD Orgs, Groups, and Roles we could assume
-
-such users might also use a default shared secret-store, shared with group members.
-
-.
-
-
-Let use standardise this to a second share-secret vault, stored in ~/.secret-store.
-
-
-    $PASSWORD_STORE_DIR="$env:USERPROFILE\.secret-store"
-
-    pass init
-
-
-_TODO_
-
 
 
 
@@ -825,16 +762,13 @@ depending on the workflow.
 
 
 
-## Pass Generation / Rotation
+## Pass Generation 
 
 Pass already supports random password generation for the individual secrets.
 
 Right now that random password generation uses configurable character classes.
 
-.
-
 Note NIST now recommends Memorable Passphrases instead of Character Classes.
-
 
 _TODO_
 
@@ -843,9 +777,77 @@ _TODO_
     - we do not want to use dictionaries or hit APIs
 
 
+## Pass Rotation
 
-## GPG Sub-Ids
+The pass-Update plugin is a cnvenicen wrapper to batch rotate a set of passwords.
 
+_TODO_
+
+  -
+
+
+## Shared Secrets
+
+
+By default pass assumes a single user-vault stored in the user's ~/.password-store.
+
+Pass by design is flexible and makes no imposition on the vault directory structure,
+
+the git repo sharing, or even on the management of GPG identities that can read it.
+
+.
+
+Additional or shared external vaults can be specified using environment variables.
+
+One should use a personal vault per user, with perhaps a shared vault for operators.
+
+This can also be checked-in under Git, Management of the GPG Identity is up to you.
+
+
+    $GITBASH="C:\Program Files\Git" 
+    $PASSWORD_STORE_DIR="$GITBASH\usr\share\.password-store"
+
+    pass init
+
+
+
+It probably makes sense to have the users's personal ~/.password-store be stored as
+
+in the private git-repo home for each user, ie have a user personal password-store.
+
+.
+
+As Corporate desktop users are tied to AD Orgs, Groups, and Roles we could assume
+
+such users might also use a default shared secret-store, shared with group members.
+
+Let us standardise this to a second share-secret vault, stored in ~/.secret-store.
+
+    $PASSWORD_STORE_DIR="$env:USERPROFILE\.secret-store"
+
+    pass init
+
+
+_TODO_
+
+
+
+## GPG Sub-UIDs
+
+
+The above is pretty simplistic and assumes we only have two distinct password vaults.
+
+For added security we may want to split up a vaults to be goverend by different keys.
+
+GPG allows any number of GPG ids to be bound as recipients, which are usually emails.
+
+.
+
+We may also want to use different encryption keys for different folders or secrets.
+
+It turns out both GPG and Pass already support this workflow, via sub uids and keys.
+
+.
 
 Though not in the RFC Email specs, Most Providers allow multiple mailbox aliases
 
@@ -857,31 +859,13 @@ by using the `+` separator. For example, the following all use the same mailbox:
     JohnDoe+Family@email.com
     JohnDoe+Friends@email.com
 
-
-NOW GPG and RSA is pretty secure, but the default mode could be hardened even more.
-
-Now sharing keys in git (even passphrase-protected) might open statistical analysis.
-
-Thus it is recommended that vaults shared on Git be on private or corporate Git repos.
-
 .
 
-But we may want to use different encryption keys for different folders or secrets.
-
-Thankfully, Pass has thought this through, as GPG supports multiple derived subkeys.
-
-.
-
-The Password-Store structure already allows for separate .gpg-id keys per folder.
-
-The rudiments are there, but right now management of those keys is done by hand.
-
-All that is required is an extension to automate deriving and using GPG sub-keys.
-
+We can use this to define sub uids with which to compartmentalise our key-vaults.
 
 _TODO_
 
-Manage multiple subkeys:
+Manage multiple sub-uids:
 
     JohnDoe+dmz@email.com
     JohnDoe+aws@email.com    
@@ -889,6 +873,19 @@ Manage multiple subkeys:
 
 
 _TODO_
+
+
+## GPG Sub-Keys
+
+In addition, GPG allows the derivation of sany number of signed subordinate keys.
+
+One advntage is that sub-keys can be revoked without revoking the owning UID.
+
+From this we get forge the rudiments a PKI system with group ACLs.
+
+
+_TODO_
+
 
 
 ## Pass ACLs
@@ -910,37 +907,36 @@ The solution here is code our own PKI ACL, with encryption keys being derived
 
 from the current and latest audience. If the audience changes, the keys change. 
 
-There has to be a dynamic component that revokes old keys and is tamper-proof.
+.
+
+In addition we need to invalidate old secrets, since they were shared via Git.
+
+So we need 3 things: (1) a key ratchet mechanism, (2) forced password rotation
+
+on all the secrets previously goverend by that key (for shared text secrets),
+
+and (3) a forced redeployment of all the services consuming those secrets.
 
 .
 
+This would probably reqquire registering said servcies beforehand via an API.
 
-This will require a PKI KDF (Key derivation Function) and some cryptography.
+Let's park this for a later day, this is starting to look like a sophisticateed
 
-Consider a symmetric shared secret derived from a hash of the GPG ID list,
+dynamic secret engine, like Mozilla, SOPS, Hashicorp Vault, or Azure KeyVault.
 
-ideally non-replayable, with a salt, and nonce, and tied to the lastest git.
-
-.
-
-Let us say we to publish a URL, where there will be a hash of the ACL set,
-
-ie of the audience ids, and have stored in Git.  The hash has to be salted
-
-and cannot be replayed, so perhaps an HMAC function, derived on past hashes.
+Also this will not work easily for binary secrets, things like SSH private keys.
 
 .
 
-In addition, this will provide a means to rotate the shared keys on demand.
+One thing that could be of use, GPG already accomodate public GPG/PGP Key Servers.
 
-This may be useful for regulatory compliance or for corporate security policy.
+This provides an easy mechnism by which we can revoke keys and issue new ones.
 
-.
 
 _TODO_
 
-investigate 
-
+investigate this.  
 
 
 
@@ -950,7 +946,13 @@ Note SSH keys and other private keys are often signed X.509 certificates.
 
 As we are using GnuPGP All the low-level SSL/TLS tools are already present.
 
-Managing TLS certs is a pain in the arse.  Not sure what can be done here.
+.
+
+Currently managing self-signed institutional TLS certs is a pain in the neck.
+
+We could leverage the pass store to manage certificate private keys and then
+
+automate a number of the self-signed cert Root CA functions and facilities.
 
 .
 
@@ -981,15 +983,25 @@ The likely candidate is OpenVPN EasyRSA, a 99% pure POSIX Bash shell tool.
 The 1% that is not bash is platform native code, .BAT or PS1 on Windows.
 
 
-## Pass-SSO
 
-Also in the realm of possibility is for OIDC 2 /OAuth 2 SSO JWT Tokens.
+## Pass-JWT
+
+Also in the realm of possibility is for pass to understand JWT Tokens.
 
 It would be awesome to be able to manage ID and Acces tokens in a vault.
 
+This requires some investigation and is straying quite a bit from Pass.
+
+_TODO_
+
+
+
+## Pass-SSO
+
+JWT Tokens would open up the possibility of SSO vis OIDC 2.0 / OAuth 2.0.
+
 We could also manage MIT Kerberos tickets and other SSO implementations.
 
-This requires some investigation and is straying quite a bit from Pass.
 
 _TODO_
 
