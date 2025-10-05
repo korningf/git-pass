@@ -8,6 +8,7 @@ Git-Pass is a port of the POSIX pass command (aka password-store) for GitBash an
 
 It is meant for institutional thin-client windows PCs that only allow a minimal GitBash shell.
 
+The beauty of pass is we can run it anywhere: on unix, linux, containers, and now on windows.
 
 .
 
@@ -227,7 +228,7 @@ Browse the official password-store docs For further documentation.
 
 
 
-#  Preparation
+#  Prerequisite
 
 Have an email identity to be used with the following:
 
@@ -242,7 +243,7 @@ Example:
    
 
 
-# Configuration
+# Preparation
 
 If you already have a GPG id the following may be useful:
 
@@ -524,7 +525,7 @@ By design pass does one simple thing well: it stores a one-line secret in a text
 The text file can append name=value parameter pairs, but the first line is the secret.
 
 
-
+.
 
 ## Fuzzy Default Command
 
@@ -537,7 +538,6 @@ If no path is specified it will assume we want to list the entire secret vault t
 
 
 # Extensions
-
 
 
 Now the simple design allows for additional extensions, usually as plain bash scripts.
@@ -581,31 +581,48 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 
 
 
-# Improvements
+## Pass Powershell
 
 
+Because of its simplicity, it was possible to port pass to the `pass.ps1` Powershell script.
 
-## Porting to Powershell
+The powershell environment assumes a minimal GitBash POSIX with SSL, SSH, GPG, Git, and Tree.
 
+.
 
-Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
+For now tt works in its rudiments, we can add, list and show secrets or entire secret files.
 
-The beauty of pass is we can run it anywhere: on windows, on linux, on serverless containers.
+We will complete most of the original pass functionality, bar maybe edit and QR encode stuff.
 
-The best would be to write a powershell program, pass.ps1, to use the native Secret Management,
+We may add enhacements to both, but that would mean a amjor fork of trhge original  `pass`.
 
-then have, as one of its SecretManagement vaults, a wrapper to the GPG .password-store vault. 
+We are debating whether such enhancements should go in a separate project.
 
 
 .
 
-Something like:
+Now Powershell Secret-Management is pretty good but it's tightly coupled to a Windows Stack.
 
-    $PASSWORD_STORE_DIR="$env:USERPROFILE\.password-store"
+This means we can expose pass as a SecretVault provider, and then  use it for Windows Apps.
 
-    gpg --decrypt $PASSWORD_STORE_DIR\windows\ntlogin.gpg
 
-    ***********
+_TODO_
+
+
+And we can trhen also easily with other popular secret managers, like HahshiCorp Vault.
+
+
+_TODO_
+
+
+# Enhancements
+
+
+The beauty of pass is almost all the intelligence is in GPG and the dir structure.
+
+GPG is incredibly rich and powerful, but it is also much too intricate and complex.
+
+Pass leverages it with an opiniated yet flexible dir structure for key management.
 
 
 
@@ -674,7 +691,6 @@ Let use standardise this to a second share-secret vault, stored in ~/.secret-sto
 
 
 _TODO_
-
 
 
 
@@ -809,7 +825,26 @@ depending on the workflow.
 
 
 
-## GPG Sub-Keys
+## Pass Generation / Rotation
+
+Pass already supports random password generation for the individual secrets.
+
+Right now that random password generation uses configurable character classes.
+
+.
+
+Note NIST now recommends Memorable Passphrases instead of Character Classes.
+
+
+_TODO_
+
+    - see what can be done here ? - are random chars good enough?
+    - note we want to keep pass light and portable
+    - we do not want to use dictionaries or hit APIs
+
+
+
+## GPG Sub-Ids
 
 
 Though not in the RFC Email specs, Most Providers allow multiple mailbox aliases
@@ -879,6 +914,7 @@ There has to be a dynamic component that revokes old keys and is tamper-proof.
 
 .
 
+
 This will require a PKI KDF (Key derivation Function) and some cryptography.
 
 Consider a symmetric shared secret derived from a hash of the GPG ID list,
@@ -905,24 +941,6 @@ _TODO_
 
 investigate 
 
-
-## Pass Generation / Rotation
-
-
-Pass already supports random password generation for the individual secrets.
-
-Right now that random password generation uses configurable character classes.
-
-.
-
-Note NIST now recommends Memorable Passphrases instead of Character Classes.
-
-
-_TODO_
-
-    - see what can be done here ? - are random chars good enough?
-    - note we want to keep pass light and portable
-    - we do not want to use dictionaries or hit APIs
 
 
 
