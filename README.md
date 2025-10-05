@@ -779,11 +779,17 @@ _TODO_
 
 ## Pass Rotation
 
-The pass-Update plugin is a cnvenicen wrapper to batch rotate a set of passwords.
+Pass-update is a pass extension plugin to batch rotate a set of passwords.
+
+It can be given pattern-based rules for rotation - we want to use a nonce.
+
+We want a rotation based on a non-reproducible HMAC hash of the group ACL.
 
 _TODO_
 
-  -
+   investigate
+
+
 
 
 ## Shared Secrets
