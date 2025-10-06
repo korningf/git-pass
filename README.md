@@ -243,19 +243,6 @@ Example:
    
 
 
-# Preparation
-
-If you already have a GPG id the following may be useful:
-
-_TODO_
-
-    gpg_id=`gpg --list-secret-keys | head -5 | grep uid | xargs | cut -d ' ' -f 5 | tr '<>' '  ' | tee` 2>/dev/null
-    gpg_hash=`gpg --list-secret-keys | head -5 | grep 'sec ' | xargs | cut -d ' ' -f 2`
-
-_TODO_
-
-
-
 
 #  Installation
 
@@ -295,16 +282,34 @@ If necessary, generate an SSH keypair:
 ![git-pass-init-gen-gpg-keyring.png](git-pass-init-gen-gpg-keyring.png "Generate PGP keyring")
 
 
-If necessary, Generate your GPG keyring:
+A GPG keyring has primary certifying RSA keypair, a number of UIDs, and a number of sub-keys.
 
-    gpg --full-generate-key
+Generate keys interactively with  `--full-generate-key` or programmtically with `--quick-generate-key`.
 
+The interactive option is considered more secure as it captures mouse movements for entropy.
+
+.
+
+If necessary, Generate your GPG keyring.
+
+
+* ~~Programmatic quick-generate method:~~
+
+    ~~$ gpg --quick-generate-key "JohnDoe@email.com" rsa4096 cert never~~
+
+
+
+* Interactive full-generate method:
+
+    $ gpg --full-generate-key
 
 Use following parameters:
 
     key kind:      1 (RSA)
     key size:      4096
     validity:      0 (never expires)
+    name:          John Doe
+    email:         JohnDoe@email.com
 
 
 Sample output:
@@ -313,6 +318,43 @@ Sample output:
     Email address: JohnDoe@email.com
     You selected this USER-ID:
       "John Doe <JohnDoe@email.com>"
+
+
+
+# Initialization
+
+Some  of the GPG programmatic commands use the Primary Key id and fingerprint.
+
+Assuming the first key is the default primary key:
+
+    $ gpg --list-secret-keys
+
+    ~.gnupg/pubring.kbx
+    ------------------------------------------
+    sec   rsa3072 2025-09-18 [SC]
+        A7971F081CD28915A2ED831426F423FFE06775FC
+    uid           [ultimate] John Doe <JohnDoe@email.com>
+    ssb   rsa3072 2025-09-18 [E]
+
+
+_TODO_
+
+    gpg_fp=`gpg --list-secret-keys | head -4 | tail -1 | awk '{print $1}'`
+    gpg_id=`gpg --list-secret-keys | head -5 | tail -1 | awk '{print $NF} | sed -e 's[<>]//g'
+
+_TODO_
+
+
+### Untrusted Keys
+
+If ever has to regenerate primary PGP keys, they will be marked `[unknown]`,
+
+This means they are untrusted.  They should be marked with `[ultimate]` trust.
+
+Follow the procedure her:
+
+
+https://unix.stackexchange.com/questions/226944/pass-and-gpg-no-public-key
 
 
 
@@ -367,7 +409,6 @@ The mechanism may be 100% command-line, or it may involve a Windows GUI dialog.
 The workflow varies: when using an MSys or MinGW GPG this may be command-line.
 
 When using GPG for Windows, this will use the Windows Secure PIN Entry dialog.
-
 
 
 
@@ -857,40 +898,91 @@ It turns out both GPG and Pass already support this workflow, via sub uids and k
 
 Though not in the RFC Email specs, Most Providers allow multiple mailbox aliases
 
-by using the `+` separator. For example, the following all use the same mailbox:
-
-    JohnDoe@email.com
-    JohnDoe+Personal@email.com
-    JohnDoe+Business@email.com
-    JohnDoe+Family@email.com
-    JohnDoe+Friends@email.com
-
-.
+by using the `+` separator. For example, the following all use the same mailbox.
 
 We can use this to define sub uids with which to compartmentalise our key-vaults.
 
-_TODO_
-
-Manage multiple sub-uids:
-
+    JohnDoe@email.com
     JohnDoe+dmz@email.com
-    JohnDoe+aws@email.com    
+    JohnDoe+aws@email.com
     JohnDoe+azure@email.com
 
+These can be added as additional GPG UIDS verbatim, or we can do better.
+
+Recall GPG uses the RFC email id spec, where we can specify a long name 
+
+and a comment in the format `Real Name (Comment) <mailbox@email.com>`.
+
+    "John Doe (AWS keys) <JohnDoe+dmz>"
+
+
+We could add comments like so:
+
+
+    $ gpg --quick-add-uid JohnDoe@email.com "John Doe (AWS) <JohnDoe+aws@email.com>"
+
+    $ gpg --list-secret-keys
+
+    /c/Users/FrancisKorning/.gnupg/pubring.kbx
+    ------------------------------------------
+    sec   rsa3072 2025-09-18 [SC] 
+        A7971F081CD28915A2ED831426F423FFE06775FC
+    uid           [ unknown] John Doe (AWS) <JohnDoe+aws@email.com>
+    uid           [ultimate] John Doe <JohnDoe@email.com>
+    ssb   rsa3072 2025-09-18 [E] 
+
+
+Sub UIDs can be removed, which revokes them permanently.
+
+    $ gpg --quick-remove-uid JohnDoe+aws@email.com
+
 
 _TODO_
+
+figure out how this works.
+
 
 
 ## GPG Sub-Keys
 
 In addition, GPG allows the derivation of sany number of signed subordinate keys.
 
-One advntage is that sub-keys can be revoked without revoking the owning UID.
+One advantage is that sub-keys can be revoked without revoking the owning UID.
 
-From this we get forge the rudiments a PKI system with group ACLs.
+Once we can do this we can have all the rudiments a PKI system with group ACLs.
 
+.
+
+Like Primary key, Subkey generation has both an interactive and quick process.
+
+Use `gpg --edit-key` for interactive and `gpg --quick-addkey` for programmatic.
+
+The interactive option is more secure as it captures mouse movements for entropy.
+
+
+* ~~Programmatic quick-addkey~~
+
+~~    $ gpg --quick-addkey A7971F081CD28915A2ED831426F423FFE06775FC rsa1024 sign 0~~
+
+
+* Interactive edit-key
 
 _TODO_
+
+    $ gpg --edit-key     JohnDoe@email.com
+
+    to automate: 
+    - action = addkey
+    - type = 4 RSA sign and/or 6 RSA crypt
+    - expiry (never - manually revoked)
+    - save
+
+Sub Keys can be revoked
+
+_TODO_
+
+figure out how this works.
+
 
 
 
