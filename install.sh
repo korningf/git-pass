@@ -51,6 +51,12 @@ install-platform () {
 	install -m 0644 -v man/pass.1 "${DESTDIR}${MANDIR}/man1/pass.1"	
 }
 
+# install windows pass (powershell)
+install-windows () {
+	install -m 0755 -v src/pass.bat "${DESTDIR}${BINDIR}/pass.bat"
+	install -m 0755 -v src/pass.ps1 "${DESTDIR}${BINDIR}/pass.ps1"
+}
+
 # install shell completions
 install-completions () {
 	install -m 0644 -v src/completion/pass.bash-completion "${DESTDIR}${BASHCOMPDIR}/pass"
@@ -74,6 +80,7 @@ install-binaries () {
 install-common
 #install-default
 install-platform
+install-windows
 install-completions
 install-extensions
 install-binaries
