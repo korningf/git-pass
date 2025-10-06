@@ -345,18 +345,6 @@ _TODO_
 _TODO_
 
 
-### Untrusted Keys
-
-If ever has to regenerate primary PGP keys, they will be marked `[unknown]`,
-
-This means they are untrusted.  They should be marked with `[ultimate]` trust.
-
-Follow the procedure her:
-
-
-https://unix.stackexchange.com/questions/226944/pass-and-gpg-no-public-key
-
-
 
 
 ### Password-Store Git repo
@@ -982,6 +970,31 @@ Sub Keys can be revoked
 _TODO_
 
 figure out how this works.
+
+
+
+### Untrusted Keys
+
+By default GPG uses the key id or fingerprint hash to manipulate keyrings and keys.
+
+Most commands allow to pass-in the email address instead, but be mindful of typos.
+
+.
+
+If ever has to regenerate primary PGP keys, they will be marked `[unknown]`,
+
+This means they are untrusted.  They should be marked with `[ultimate]` trust.
+
+
+The fix is to manually edit the key.
+
+    gpg --edit-key JohnDoe@email.com
+
+
+    action: trust
+    type:   5 [unconditional]
+    save
+
 
 
 
