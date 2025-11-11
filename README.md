@@ -658,7 +658,9 @@ SSH + X.509 keys, Docker + Kubernetes Secrets, AWS-CLI + Azure-Cli Access-Keys.
 ## Pass Powershell
 
 
-Because of its simplicity, it was possible to port pass to the `pass.ps1` Powershell script.
+Because of its simplicity, it was possible to port `pass.sh` to a `pass.ps1` Powershell script.
+
+The powershell version is in its infancy, a number of features have yet to be implemented.
 
 The powershell environment assumes a minimal GitBash POSIX with SSL, SSH, GPG, Git, and Tree.
 
@@ -668,22 +670,25 @@ For now it works in its rudiments, we can add, list and show secrets or entire s
 
 We will complete most of the original pass functionality, bar maybe edit and QR encode stuff.
 
-We may add enhacements to both, but that would mean a major fork of trhe original  `pass`.
+We could add major enhancements to both, but it would mean a major fork of the original  `pass`.
 
-We are debating whether such enhancements should go in a separate project.
+We are debating whether such enhancements should go in a separate project (more on this later).
 
 
 .
 
-For added portability, we can also implement the PowerShel.SecretManagement ISecureVault API
+For added portability, we implement the Windows PowerShell.SecretManagement ISecureVault API
 
-and integrate with the windows application ecosystem.
+and integrate it with the Windows application ecosystem (this would be the 'ne plus ultra' !). 
 
 
 _TODO_
 
 
-And we can then also easily with other popular secret managers, like HahshiCorp Vault.
+In addition to iSecureVault, pass integrates popular desktop secret-managers (KeePaSS, etc).
+
+We could also integrate pass with cloud secret managers, like HahshiCorp Vault and Mozilla SOPS.
+
 
 
 _TODO_
@@ -729,7 +734,7 @@ _TODO_
 ## Agent Tunneling
 
 
-Once an Agent is configured, we could writer an extension to open secure proxy tunnels.
+Once an Agent is configured, we could write an extension to open secure proxy tunnels.
 
 * Pass-tunnel Extension
 
